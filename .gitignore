@@ -1,3 +1,13 @@
+.idea  # Clion
+cmake-*
+.vscode
+
+test*
+
+###
+# Auto-generated:
+###
+
 # Prerequisites
 *.d
 
