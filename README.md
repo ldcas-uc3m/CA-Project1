@@ -20,7 +20,7 @@ Teams will develop two programs named ``sim-soa`` (structure of arrays version) 
 The program will take the following parameters for its correct execution:
 * ``num_objects``: integer number, greater or equal than 0, indicating the number of objects that will be simulated.
 * ``num_iterations``: integer number, greater or equal than 0, indicating the number of iterations (time steps) that will be simulated.
-* ``seed``: positive integer number to be used as a seed for random distribution generator functions. Note: Two simulations with the same parameters but different seed will lead to dierent scenarios
+* ``seed``: positive integer number to be used as a seed for random distribution generator functions. Note: Two simulations with the same parameters but different seed will lead to different scenarios
 * ``size_enclosure``: real positive number indicating the size of the simulation enclosure. The enclosure is considered to be a perfect cube with a vertex in the coordinates origin and with side equal to size_enclosure.
 * ``time_step``: real positive number indicating the time increment for each iteration of the simulation.
 
@@ -114,8 +114,8 @@ You are allowed to use additional compiler flags as long as you document them in
 This task consists of the performance evaluation of the sequential application. <br/>
 To carry out the performance evaluation you must measure the application execution time. You are expected to represent graphically your results. Keep in mind the following considerations:
 * Run each experiment a given number of times and take the average value. You are recommended to perform each experiment at least 10 or more executions so that you can give a confidence interval.
-* Study results for dierent object populations. Consider cases with 1000, 2000 and 4000
-* Study results for dierent number of iterations: Consider cases with 50, 100 and 200.
+* Study results for different object populations. Consider cases with 1000, 2000 and 4000
+* Study results for different number of iterations: Consider cases with 50, 100 and 200.
 
 Represent graphically total execution times. Represent graphically average time per iteration. <br/>
 Include in your report the conclusions you may infer from results. Do not limit to describing data. You must search for a convincing explanation of results.
