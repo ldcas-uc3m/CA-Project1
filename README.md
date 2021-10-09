@@ -20,8 +20,9 @@ Teams will develop two programs named ``sim-soa`` (structure of arrays version) 
 The program will take the following parameters for its correct execution:
 * ``num_objects``: integer number, greater or equal than 0, indicating the number of objects that will be simulated.
 * ``num_iterations``: integer number, greater or equal than 0, indicating the number of iterations (time steps) that will be simulated.
-* ``seed``: positive integer number to be used as a seed for random distribution generator functions. Note: Two simulations with the same parameters but different seed will lead to different scenarios
-* ``size_enclosure``: real positive number indicating the size of the simulation enclosure. The enclosure is considered to be a perfect cube with a vertex in the coordinates origin and with side equal to size_enclosure.
+* ``random_seed``: positive integer number to be used as a seed for random distribution generator functions. Note: Two simulations with the same parameters but different seed will lead to different scenarios
+* ``size_enclosure``: real positive number indicating the size of the simulation enclosure. The enclosure is considered to be a perfect cube with a vertex in the coordinates origin and with side equal to size_enclosure. Consequently, if the value for ``size_enclosure`` is _n_, the opposite vertices fo the cube will
+have coordinates (0, 0, 0) and (_n_, _n_, _n_).
 * ``time_step``: real positive number indicating the time increment for each iteration of the simulation.
 
 When the number of parameters is wrong, the program will terminate with code error ``-1`` and an error message to the standard error output. <br/>
@@ -58,7 +59,9 @@ Once all input parameters have been processed and initial positions and velociti
 Object position in the 3D space (with coordinates in floating point double precision), must be generated following a random distribution with the seed that has been provided as program argument.
 * A single pseudo-random number generator engine must be used for all distributions. It must be a 64 bits Mersenne-Twister generator (``std::mt19937_64``). This engine will be initiated with a random seed received as a parameter by the program. Information is available at https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine.
 * All position values will be generated using a uniform distribution with lower bound equal to 0 and upper bound equal to size_enclosure, using an object of type ``uniform_real_distribution``. Information is available at https://en.cppreference.com/w/cpp/numeric/random/uniform_real_distribution.
-* All mass values will be generated using a normal distribution with mean equal to 1e21 and standard deviation equal to 1e15.
+* All mass values will be generated using a normal distribution with mean equal to 1e21 and standard deviation equal to 1e15. using an object of type normal_distribution. (Information is available at https://en.cppreference.com/w/cpp/numeric/random/normal_distribution).
+
+Generation order of random values is important. Values will be generated object by object and following within an object the order <x,y,z,m>.
 
 ### Attraction forces computation
 __Gravitational force computation:__ Gravitational constant (_G_), object masses of both objects, _mi_ & _mj_, and position vectors, _pi_ & _pj_, will be used.<br/>
@@ -89,6 +92,11 @@ When two objects collide they collapse into an object with larger mass. Two obje
 In this case both objects (_a_ and _b_) lead to a single object (_c_) with the following properties:
 * New mass results from mass addition (_mc_ = _ma_ + _mb_).
 * New velocity results from velocity addition (_vc_ = _va_ + _vb_).
+* New position is the position of the first object (_pc_ = _pa_).
+* Object _a_ is replaced by object _c_.
+* Object _b_ no longer exists.
+
+__Note:__ Keep in mind that in those cases there is on object less in the system.
 
 ### Data storage
 Once all simulation iterations have finished the program shall store final data into a file named ``final_config.txt``, with the same format and contents than the file ``init_config.txt``.
@@ -100,7 +108,10 @@ All your source files must compile without problems and shall not emit any compi
 -Wall -Wextra -Wno-deprecated -Werror -pedantic -pedantic-errors
 ```
 Keep also in mind that you will have to perform all evaluations with compiler optimizations enabled (compiler options ``-O3`` and ``-DNDEBUG``). You can easily get this with ``-DCMAKE_BUILD_TYPE=Release``. <br/>
-You are allowed to use additional compiler flags as long as you document them in the project report and justify its use. Such flags must be properly included in the CMake configuration file.
+You are allowed to use additional compiler flags as long as you document them in the project report and justify its use. Such flags must be properly included in the CMake configuration file. <br/>
+<br/>
+You are allowed to use any element from the C++ standard library that is included in your compiler distribution. Note that this includes many header files like <vector>, <list>, <fstream>,<cmath>, <random>, ... <br/>
+In general, additional libraries are not allowed.
 
 ##  Sequential performance evaluation
 This task consists of the performance evaluation of the sequential application. <br/>
