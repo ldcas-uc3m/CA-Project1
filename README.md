@@ -61,25 +61,17 @@ Object position in the 3D space (with coordinates in floating point double preci
 * All mass values will be generated using a normal distribution with mean equal to 1e21 and standard deviation equal to 1e15.
 
 ### Attraction forces computation
-__Gravitational force computation:__ Gravitational constant (_G_), object masses of both objects, _mi_ & _mj_, and position vectors, _pi_ & _pj_, will be used.
-```
-[big fucking formula I'm not going to copy, just look it up]
-```
+__Gravitational force computation:__ Gravitational constant (_G_), object masses of both objects, _mi_ & _mj_, and position vectors, _pi_ & _pj_, will be used.<br/>
+![img1](https://user-images.githubusercontent.com/78721925/136654279-7a3a0f32-0df7-4935-a5a7-87213725f0e8.png) <br/>
 The universal gravitational constant will be the value 6.674e−11. <br/>
 For an object _i_, this force is applied with a positive value and for object _j_ with negative value. <br/>
 An object does not apply any force on itself. <br/>
-__Acceleration vector computation:__ Acceleration (_veca_) is determined using its mass (_m_) and all the force contributions.
-```
-[another formula]
-```
-__Velocity vector computation:__ Velocity (_v_) is determined using its acceleration (_a_) and the time step (∆t).
-```
-[yet another formula]
-```
-__Position vector computation:__ Position is determined using the velocity and the time step.
-```
-[you know the drill]
-```
+__Acceleration vector computation:__ Acceleration (_veca_) is determined using its mass (_m_) and all the force contributions. <br/>
+![img2](https://user-images.githubusercontent.com/78721925/136654334-aa1fbef8-26fd-4182-9eb3-519a5dfab67e.png) <br/>
+__Velocity vector computation:__ Velocity (_v_) is determined using its acceleration (_a_) and the time step (∆t). <br/>
+![img3](https://user-images.githubusercontent.com/78721925/136654366-5c92c836-0466-4d4a-9040-aac3a5c1307a.png) <br/>
+__Position vector computation:__ Position is determined using the velocity and the time step. <br/>
+![img4](https://user-images.githubusercontent.com/78721925/136654390-645e5d97-700a-4483-b3d6-8ec7ffbc5f3f.png) <br/>
 __Rebound effect:__ If the position passes one of the enclosure bounds:
 1. The object is placed in the corresponding bound plane:
 ```
@@ -105,7 +97,7 @@ Once all simulation iterations have finished the program shall store final data 
 This task consists in the development of the sequential version of the described application in C++17 (or C++20). <br/>
 All your source files must compile without problems and shall not emit any compiler warning. In particular, the following compiler warning specific flags must be enabled:
 ```
--Wall -Wextra -Wno-deprecated -Werror -pedantic -pedantic-errors,
+-Wall -Wextra -Wno-deprecated -Werror -pedantic -pedantic-errors
 ```
 Keep also in mind that you will have to perform all evaluations with compiler optimizations enabled (compiler options ``-O3`` and ``-DNDEBUG``). You can easily get this with ``-DCMAKE_BUILD_TYPE=Release``. <br/>
 You are allowed to use additional compiler flags as long as you document them in the project report and justify its use. Such flags must be properly included in the CMake configuration file.
