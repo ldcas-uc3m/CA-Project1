@@ -16,11 +16,10 @@ class Object{
             px = x;
             py = y;
             pz = z;
-            m = mass; 
+            m = mass;
         }
         double px, py, pz, vx, vy, vz;
         int m;
-
 };
 
 // Global variables
@@ -61,10 +60,13 @@ auto parametersGeneration(int argc, const char * argcv[]){
     return universe;
 }
 
-
-void objectCollision(Object * a, Object * b){
+ void objectCollision(Object * a, Object * b){
     // TODO: Ivan
-
+    a->m = a->m +b->m;
+    a->vx = a->vx + b->vx;
+    a->vy = a->vy + b->vy;
+    a->vz = a->vz + b->vz;
+    delete b;
     return;
 }
 
