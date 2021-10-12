@@ -21,7 +21,6 @@ class Force{
             y = fy;
             z = fz;
         }
-
         double x;
         double y;
         double z;
@@ -37,7 +36,6 @@ class Object{
         }
         double px, py, pz, vx, vy, vz;
         int m;
-        vector<double> forces;
 };
 
 // constants
@@ -49,9 +47,10 @@ int num_iterations;
 int random_seed;
 int size_enclosure;
 int time_step;
+Force ** forces;
 //Force forces[1][1];  // TODO: quitar este apaño necesario para acceder en updatePosition()
 
-auto parametersGeneration(int argc, const char * argcv[]){
+auto parametersGeneration(const char * argcv[]){
 
     // parameters init & casting
     num_objects = (int) argcv[0];
@@ -174,7 +173,7 @@ void updatePosition(Object obj, int num){
 }
 
 
-Force forceComputation(Object a, Object b){    
+Force forceComputation(Object a, Object b){
     // distance
     double dx = b.px - a.px;
     double dy = b.py - a.py;
@@ -196,16 +195,19 @@ Force forceComputation(Object a, Object b){
 }
 
 
-int main(int argc, const char * argcv[]){
+int main(int argc, const char ** argcv){
 
     // check arguments
-    if (argc != 5 || argcv[0] < 0 || argcv[1] < 0 || argcv[2] < 0 || argcv[3] < 0 || argcv[4] < 0){
+    if (argc != 5 || num_objects < 0 || num_iterations < 0 || random_seed < 0 || size_enclosure < 0 || time_step < 0){
         cout << "sim-aos invoked with " << argc << "parameters." << endl << "Arguments: "<< endl << " num_objects: " << argcv[0] << endl << " num_iterations: " << argcv[1] << endl << " random_seed: " << argcv[2] << endl << " size_enclosure: " << argcv[3] << endl << " time_step: " << argcv[4] << endl ;
     }
     
-    auto * universe = parametersGeneration(argc, argcv);
+    auto * universe = parametersGeneration(argcv);
 
-    Force forces[num_objects][num_objects];
+    Force ** forces = new Force forces *[num_objects];
+    for (int i = 0; i < num_objects; ++i) {
+        forces[i]= new Force forces[num_objects];
+    }
     //vector<vector<Force>> f(num_objects, num_objects);
 
     for(int iteration; iteration < num_iterations; iteration++){
