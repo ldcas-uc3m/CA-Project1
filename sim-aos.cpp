@@ -41,6 +41,7 @@ class Object{
 
 // constants
 const double g = 6.674 * pow(10, -11);
+const double COL_DISTANCE = 0;  // minimum colision distance
 
 // Global variables
 int num_objects;
@@ -74,9 +75,9 @@ int main(int argc, const char ** argcv){
     uniform_real_distribution<> dis(0.0, size_enclosure);
     normal_distribution<> d{pow(10, 21),pow(10, 15)};
 
-    // introduce seed
-    gen64.seed(random_seed);
+    gen64.seed(random_seed);  // introduce seed
 
+    // memory alloc
     Object * universe = (Object*)malloc(sizeof(Object) * num_objects);
 
     ofstream MyFile("init_config.txt");  // open file
@@ -93,16 +94,24 @@ int main(int argc, const char ** argcv){
     }
 
     MyFile.close();
-    //auto * universe = parametersGeneration(argcv);
+
+    int curr_objects = num_objects;
 
     for(int iteration; iteration < num_iterations; iteration++){
-        if(num_objects == 0){
+        if(curr_objects == 0){
             break;
         }
+        Object a(0,0,0,0);
         for(int i = 0; i < num_objects; i++){
-            Object a = universe[i];
+            try{
+                a = universe[i];
+            } catch(...){break;}
+
             for(int j = ++i; j < num_objects; j++){
-                Object b = universe[j];
+                Object b(0,0,0,0);
+                try{
+                    b = universe[j];
+                } catch(...){break;}
 
                 /* ---
                 FORCE COMPUTATION
@@ -115,7 +124,7 @@ int main(int argc, const char ** argcv){
                 double dz = b.pz - a.pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                if(distance < 1){
+                if(distance < COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
@@ -127,6 +136,7 @@ int main(int argc, const char ** argcv){
                     a.vz = a.vz + b.vz;
 
                     delete &b;
+                    curr_objects--;
 
                     // force between a & b is 0
                 } else{
@@ -195,4 +205,19 @@ int main(int argc, const char ** argcv){
             }
         }
     }
+    /*
+    OUTPUT
+    */
+    ofstream MyFile("final_config.txt");
+
+    MyFile << argcv[3] << argcv[4] << argcv[0];
+    MyFile << endl;
+
+    for (int i = 0; i < num_objects; i++){
+        // write to file
+        MyFile << universe[i].px << universe[i].py << universe[i].pz << universe[i].vx << universe[i].vy << universe[i].vz << universe[i].m;
+        MyFile << endl;
+    }
+
+    MyFile.close();
 }
