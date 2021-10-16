@@ -33,7 +33,9 @@ class Object{
             py = y;
             pz = z;
             m = mass;
-            ax, ay, az = 0;
+            ax = 0;
+            ay = 0;
+            az = 0;
         }
         double px = 0;
         double py = 0;
@@ -103,22 +105,25 @@ int main(int argc, const char ** argcv){
         MyFile << endl;
     }
     
-
     MyFile.close();
 
     int curr_objects = num_objects;
 
+    bool Bmap[num_objects] = {true};  // bytemap of objects
+
+    /* ---
+    KERNEL
+    --- */
+
     for(int iteration; iteration < num_iterations; iteration++){
-        if(curr_objects == 0){
-            break;
-        }
+        if(curr_objects == 0) break;
         Object a(0,0,0,0);
         for(int i = 0; i < num_objects; i++){
+            if(not Bmap[i]) continue;
             a = universe[i];
-
+            Object b(0,0,0,0);
             for(int j = ++i; j < num_objects; j++){
-                Object b(0,0,0,0);
-
+                if(not Bmap[i]) continue;
                 b = universe[j];
 
                 /* ---
@@ -143,8 +148,10 @@ int main(int argc, const char ** argcv){
                     a.vy = a.vy + b.vy;
                     a.vz = a.vz + b.vz;
 
+                    // del object
                     delete &(universe[j]);
                     curr_objects--;
+                    Bmap[j] = false;
 
                     // force between a & b is 0
                 } else{
@@ -213,6 +220,7 @@ int main(int argc, const char ** argcv){
             }
         }
     }
+
     /*
     OUTPUT
     */
