@@ -35,8 +35,16 @@ class Object{
             m = mass;
             ax, ay, az = 0;
         }
-        double px, py, pz, vx, vy, vz, ax, ay, az;
-        int m;
+        double px = 0;
+        double py = 0;
+        double pz = 0;
+        double vx = 0;
+        double vy = 0;
+        double vz = 0;
+        double ax = 0;
+        double ay = 0;
+        double az = 0;
+        unsigned long long int m;
 };
 
 // constants
@@ -54,21 +62,21 @@ int time_step;
 int main(int argc, const char ** argcv){
 
     // check arguments
-    if (argc != 5 || num_objects < 0 || num_iterations < 0 
+    if (argc != 6 || num_objects < 0 || num_iterations < 0 
         || random_seed < 0 || size_enclosure < 0 || time_step < 0){
         cout << "sim-aos invoked with " << argc << "parameters." 
-        << endl << "Arguments: "<< endl << " num_objects: " << argcv[0] 
-        << endl << " num_iterations: " << argcv[1] << endl << " random_seed: " 
-        << argcv[2] << endl << " size_enclosure: " << argcv[3] << endl 
-        << " time_step: " << argcv[4] << endl ;
+        << endl << "Arguments: "<< endl << " num_objects: " << argcv[1] 
+        << endl << " num_iterations: " << argcv[2] << endl << " random_seed: " 
+        << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl 
+        << " time_step: " << argcv[5] << endl ;
     }
 
     // parameters init & casting
-    num_objects = atoi(argcv[0]);
-    num_iterations = atoi(argcv[1]);
-    random_seed = atoi(argcv[2]);
-    size_enclosure = atoi(argcv[3]);
-    time_step = atoi(argcv[4]);
+    num_objects = atoi(argcv[1]);
+    num_iterations = atoi(argcv[2]);
+    random_seed = atoi(argcv[3]);
+    size_enclosure = atoi(argcv[4]);
+    time_step = atoi(argcv[5]);
 
     // distribution generation
     mt19937_64 gen64;  // generate object
@@ -79,19 +87,22 @@ int main(int argc, const char ** argcv){
 
     // memory alloc
     Object * universe = (Object*)malloc(sizeof(Object) * num_objects);
-
-    ofstream MyFile("init_config.txt");  // open file
     
-    MyFile << argcv[3] << argcv[4] << argcv[0];
+    ofstream MyFile("init_config.txt", ofstream::out);  // open file
+    
+    MyFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
     MyFile << endl;
-
+    
     // populate
     for (int i = 0; i < num_objects; i++){
         universe[i] = Object(dis(gen64), dis(gen64), dis(gen64), d(gen64));
         // write to file
-        MyFile << universe[i].px << universe[i].py << universe[i].pz << universe[i].vx << universe[i].vy << universe[i].vz << universe[i].m;
+        MyFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+        << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
+        << " " << universe[i].m;
         MyFile << endl;
     }
+    
 
     MyFile.close();
 
@@ -103,15 +114,12 @@ int main(int argc, const char ** argcv){
         }
         Object a(0,0,0,0);
         for(int i = 0; i < num_objects; i++){
-            try{
-                a = universe[i];
-            } catch(...){break;}
+            a = universe[i];
 
             for(int j = ++i; j < num_objects; j++){
                 Object b(0,0,0,0);
-                try{
-                    b = universe[j];
-                } catch(...){break;}
+
+                b = universe[j];
 
                 /* ---
                 FORCE COMPUTATION
@@ -135,7 +143,7 @@ int main(int argc, const char ** argcv){
                     a.vy = a.vy + b.vy;
                     a.vz = a.vz + b.vz;
 
-                    delete &b;
+                    delete &(universe[j]);
                     curr_objects--;
 
                     // force between a & b is 0
@@ -208,16 +216,18 @@ int main(int argc, const char ** argcv){
     /*
     OUTPUT
     */
-    ofstream MyFile("final_config.txt");
+    ofstream OutFile("final_config.txt");
 
-    MyFile << argcv[3] << argcv[4] << argcv[0];
-    MyFile << endl;
+    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
+    OutFile << endl;
 
     for (int i = 0; i < num_objects; i++){
         // write to file
-        MyFile << universe[i].px << universe[i].py << universe[i].pz << universe[i].vx << universe[i].vy << universe[i].vz << universe[i].m;
-        MyFile << endl;
+        OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+        << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
+        << " " << universe[i].m;
+        OutFile << endl;
     }
 
-    MyFile.close();
+    OutFile.close();
 }
