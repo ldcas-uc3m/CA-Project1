@@ -51,7 +51,7 @@ class Object{
 
 // constants
 const double g = 6.674 * pow(10, -11);
-const double COL_DISTANCE = 0;  // minimum colision distance
+const double COL_DISTANCE = 1;  // minimum colision distance
 
 // Global variables
 int num_objects;
@@ -123,8 +123,13 @@ int main(int argc, const char ** argcv){
             if(not Bmap[i]) continue;
             a = universe[i];
             Object b(0,0,0,0);
+            
             for(int j = i + 1; j < num_objects; j++){
-                if(not Bmap[i]) continue;
+                //cout << i << " " << j << endl;
+                //cout << Bmap[i] << endl;
+                if(not Bmap[j]) continue;
+                
+                //cout << "p"<< endl;
                 b = universe[j];
 
                 /* ---
@@ -138,10 +143,14 @@ int main(int argc, const char ** argcv){
                 double dz = b.pz - a.pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
+                //cout << distance << endl;
+
                 if(distance < COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
+
+                    cout << "p" << endl;
 
                     // merge objects into a
                     a.m = a.m + b.m;
@@ -157,16 +166,16 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * a.m * b.m * dy) / abs(pow(dy, 3));
-                fa.y = (g * a.m * b.m * dy) / abs(pow(dy, 3));
-                fa.z = (g * a.m * b.m * dz) / abs(pow(dz, 3));
+                    fa.x = (g * a.m * b.m * dy) / abs(pow(dy, 3));
+                    fa.y = (g * a.m * b.m * dy) / abs(pow(dy, 3));
+                    fa.z = (g * a.m * b.m * dz) / abs(pow(dz, 3));
 
-                Force fb(- fa.x, -fa.y, -fa.z);
+                    Force fb(- fa.x, -fa.y, -fa.z);
 
-                // b acceleration
-                b.ax -= fb.x/a.m;
-                b.ay -= fb.y/a.m;
-                b.az -= fb.z/a.m;
+                    // b acceleration
+                    b.ax -= fb.x/a.m;
+                    b.ay -= fb.y/a.m;
+                    b.az -= fb.z/a.m;
                 }
 
                 // a acceleration
