@@ -28,7 +28,7 @@ class Force{
 
 class Object{
     public:
-        Object(double x, double y, double z, int mass){
+        Object(double x, double y, double z, double mass){
             px = x;
             py = y;
             pz = z;
@@ -46,7 +46,7 @@ class Object{
         double ax = 0;
         double ay = 0;
         double az = 0;
-        unsigned long long int m;
+        double m;
 };
 
 // constants
@@ -81,10 +81,11 @@ int main(int argc, const char ** argcv){
     time_step = atoi(argcv[5]);
 
     // distribution generation
+    random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{pow(10, 21),pow(10, 15)};
-
+    normal_distribution<double> d{pow(10, 21),pow(10, 15)};
+    
     gen64.seed(random_seed);  // introduce seed
 
     // memory alloc
