@@ -125,7 +125,7 @@ int main(int argc, const char ** argcv){
         if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
             if(not Bmap[i]) continue;
-            for(int j = ++i; j < num_objects; j++){
+            for(int j = i + 1; j < num_objects; j++){
                 if(not Bmap[i]) continue;
 
                 /* ---
