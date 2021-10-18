@@ -122,7 +122,7 @@ int main(int argc, const char ** argcv){
             if(not Bmap[i]) continue;
             a = universe[i];
             Object b(0,0,0,0);
-            for(int j = ++i; j < num_objects; j++){
+            for(int j = i + 1; j < num_objects; j++){
                 if(not Bmap[i]) continue;
                 b = universe[j];
 
