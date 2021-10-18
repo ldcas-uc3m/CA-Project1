@@ -38,7 +38,7 @@ class Universe{
         double * vx = (double *)malloc(sizeof(double)*objects);
         double * vy = (double *)malloc(sizeof(double)*objects);
         double * vz = (double *)malloc(sizeof(double)*objects);
-        int * m = (int *)malloc(sizeof(int)*objects);
+        double * m = (double *)malloc(sizeof(double)*objects);
         double * ax = (double *)malloc(sizeof(double)*objects);
         double * ay = (double *)malloc(sizeof(double)*objects);
         double * az = (double *)malloc(sizeof(double)*objects);
@@ -47,7 +47,7 @@ class Universe{
 
 // constants
 const double g = 6.674 * pow(10, -11);
-const double COL_DISTANCE = 0;  // minimum colision distance
+const double COL_DISTANCE = 1;  // minimum colision distance
 
 // Global variables
 int num_objects;
@@ -77,9 +77,10 @@ int main(int argc, const char ** argcv){
     time_step = atoi(argcv[5]);
 
     // distribution generation
+    std::random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{pow(10, 21),pow(10, 15)};
+    normal_distribution<double> d{pow(10, 21),pow(10, 15)};
 
     gen64.seed(random_seed);  // introduce seed
 
@@ -126,7 +127,7 @@ int main(int argc, const char ** argcv){
         for(int i = 0; i < num_objects; i++){
             if(not Bmap[i]) continue;
             for(int j = i + 1; j < num_objects; j++){
-                if(not Bmap[i]) continue;
+                if(not Bmap[j]) continue;
 
                 /* ---
                 FORCE COMPUTATION
