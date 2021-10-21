@@ -113,27 +113,27 @@ int main(int argc, const char ** argcv){
     }
     
     MyFile.close();
-
+    
     int curr_objects = num_objects;
 
-    bool Bmap[num_objects] = {true};  // bytemap of objects
+    bool deleted[num_objects];  // bytemap of objects -> if true, object is deleted
 
     /* ---
     KERNEL
     --- */
-
-    for(int iteration; iteration < num_iterations; iteration++){
+    
+    for(int iteration = 0; iteration < num_iterations; iteration++){
         if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
-            if(not Bmap[i]) continue;
+            if(deleted[i]) continue;
             for(int j = i + 1; j < num_objects; j++){
-                if(not Bmap[j]) continue;
-
+                if(deleted[j]) continue;
+                
                 /* ---
                 FORCE COMPUTATION
                 --- */
                 Force fa(0, 0, 0);
-
+                
                 // distance
                 double dx = universe.px[j] - universe.px[i];
                 double dy = universe.py[j] - universe.py[i];
@@ -153,7 +153,7 @@ int main(int argc, const char ** argcv){
 
                     // delete b (j)
                     curr_objects--;
-                    Bmap[j] = false;
+                    deleted[j] = true;
 
                     // force between a & b is 0
                 } else{
@@ -176,6 +176,7 @@ int main(int argc, const char ** argcv){
                 universe.az[i] += fa.z/universe.m[i];
 
             }
+            
             /* ---
             UPDATE POSITION
             --- */
@@ -220,6 +221,8 @@ int main(int argc, const char ** argcv){
                 universe.pz[i] = size_enclosure;
                 universe.vz[i] = - universe.vz[i];
             }
+
+            //cout << "iteration " << iteration << ", object " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << " | " << universe.m[i] << endl;
         }
     }
 
@@ -232,6 +235,7 @@ int main(int argc, const char ** argcv){
     OutFile << endl;
 
     for (int i = 0; i < num_objects; i++){
+        if(deleted[i]) continue;
         // write to file
         OutFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
         << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
