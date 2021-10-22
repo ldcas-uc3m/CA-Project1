@@ -118,13 +118,13 @@ int main(int argc, const char ** argcv){
         
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
-            Object a = universe[i];
+            Object *a = &universe[i];
             //Object b(0,0,0,0);
 
             for(int j = i + 1; j < num_objects; j++){
                 if(deleted[j]) continue;
                 
-                Object b = universe[j];
+                Object *b = &universe[j];
 
                 /* ---
                 FORCE COMPUTATION
@@ -132,9 +132,9 @@ int main(int argc, const char ** argcv){
                 Force fa(0, 0, 0);
 
                 // distance
-                double dx = b.px - a.px;
-                double dy = b.py - a.py;
-                double dz = b.pz - a.pz;
+                double dx = b->px - a->px;
+                double dy = b->py - a->py;
+                double dz = b->pz - a->pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
                 if(distance < COL_DISTANCE){
@@ -143,10 +143,10 @@ int main(int argc, const char ** argcv){
                     --- */
 
                     // merge objects into a
-                    a.m = a.m + b.m;
-                    a.vx = a.vx + b.vx;
-                    a.vy = a.vy + b.vy;
-                    a.vz = a.vz + b.vz;
+                    a->m = a->m + b->m;
+                    a->vx = a->vx + b->vx;
+                    a->vy = a->vy + b->vy;
+                    a->vz = a->vz + b->vz;
 
                     // del b
                     delete &(universe[j]);
@@ -156,22 +156,22 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                    fa.x = (g * a.m * b.m * dy) / abs(pow(dy, 3));
-                    fa.y = (g * a.m * b.m * dy) / abs(pow(dy, 3));
-                    fa.z = (g * a.m * b.m * dz) / abs(pow(dz, 3));
+                    fa.x = (g * a->m * b->m * dy) / abs(pow(dy, 3));
+                    fa.y = (g * a->m * b->m * dy) / abs(pow(dy, 3));
+                    fa.z = (g * a->m * b->m * dz) / abs(pow(dz, 3));
 
                     Force fb(- fa.x, -fa.y, -fa.z);
 
                     // b acceleration
-                    b.ax -= fb.x/a.m;
-                    b.ay -= fb.y/a.m;
-                    b.az -= fb.z/a.m;
+                    b->ax -= fb.x/a->m;
+                    b->ay -= fb.y/a->m;
+                    b->az -= fb.z/a->m;
                 }
 
                 // a acceleration
-                a.ax += fa.x/a.m;
-                a.ay += fa.y/a.m;
-                a.az += fa.z/a.m;
+                a->ax += fa.x/a->m;
+                a->ay += fa.y/a->m;
+                a->az += fa.z/a->m;
 
                 //cout << "iteration " << iteration <<  ", object " << i << j << " | " << fa.x << " " << fa.y << " " << fa.z << " " << endl;
 
@@ -180,28 +180,28 @@ int main(int argc, const char ** argcv){
             UPDATE POSITION
             --- */
             // velocity calculation
-            double vx = a.vx + a.ax * time_step;
-            double vy = a.vy + a.ay * time_step;
-            double vz = a.vz + a.az * time_step;
+            double vx = a->vx + a->ax * time_step;
+            double vy = a->vy + a->ay * time_step;
+            double vz = a->vz + a->az * time_step;
 
-            //cout << "iteration " << iteration <<  ", object " << i << " | " << (vx-a.vx) << " " << (vy-a.vy) << " " << (vz-a.vz) << " " << endl;
+            //cout << "iteration " << iteration <<  ", object " << i << " | " << (vx-a->vx) << " " << (vy-a->vy) << " " << (vz-a->vz) << " " << endl;
 
-            a.vx = vx;
-            a.vy = vy;
-            a.vz = vz;
+            a->vx = vx;
+            a->vy = vy;
+            a->vz = vz;
             
 
             // position calculation
-            a.px += vx * time_step;
-            a.py += vz * time_step;
-            a.py += vz * time_step;
+            a->px += vx * time_step;
+            a->py += vz * time_step;
+            a->py += vz * time_step;
 
 
             //double px = vx * time_step;
             //double py = vx * time_step;
             //double pz = vx * time_step;
 
-            //cout << "iteration " << iteration <<  ", object " << i << " | " << (px-a.px) << " " << (py-a.py) << " " << (pz-a.pz) << " " << endl;
+            //cout << "iteration " << iteration <<  ", object " << i << " | " << (px-a->px) << " " << (py-a->py) << " " << (pz-a->pz) << " " << endl;
             
             
 
@@ -209,28 +209,28 @@ int main(int argc, const char ** argcv){
             REBOUND EFFECT
             --- */
 
-            if(a.px <= 0){
-                a.px = 0;
-                a.vx = - a.vx;
-            } else if(a.px >= size_enclosure){
-                a.px = size_enclosure;
-                a.vx = - a.vx;
+            if(a->px <= 0){
+                a->px = 0;
+                a->vx = - a->vx;
+            } else if(a->px >= size_enclosure){
+                a->px = size_enclosure;
+                a->vx = - a->vx;
             }
 
-            if(a.py <= 0){
-                a.py = 0;
-                a.vy = - a.vy;
-            } else if(a.py >= size_enclosure){
-                a.py = size_enclosure;
-                a.vy = - a.vy;
+            if(a->py <= 0){
+                a->py = 0;
+                a->vy = - a->vy;
+            } else if(a->py >= size_enclosure){
+                a->py = size_enclosure;
+                a->vy = - a->vy;
             }
 
-            if(a.pz <= 0){
-                a.pz = 0;
-                a.vz = - a.vz;
-            } else if(a.pz >= size_enclosure){
-                a.pz = size_enclosure;
-                a.vz = - a.vz;
+            if(a->pz <= 0){
+                a->pz = 0;
+                a->vz = - a->vz;
+            } else if(a->pz >= size_enclosure){
+                a->pz = size_enclosure;
+                a->vz = - a->vz;
             }
             //cout << "iteration " << iteration << ", object " << i << " | " << universe[i].px << " " << universe[i].py << " " << universe[i].pz << " | " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz << " | " << universe[i].m << endl;
         }
