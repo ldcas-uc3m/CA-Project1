@@ -163,9 +163,9 @@ int main(int argc, const char ** argcv){
                     Force fb(- fa.x, -fa.y, -fa.z);
 
                     // b acceleration
-                    b->ax -= fb.x/a->m;
-                    b->ay -= fb.y/a->m;
-                    b->az -= fb.z/a->m;
+                    b->ax -= fb.x/b->m;
+                    b->ay -= fb.y/b->m;
+                    b->az -= fb.z/b->m;
                 }
 
                 // a acceleration
