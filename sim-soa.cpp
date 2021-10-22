@@ -165,9 +165,9 @@ int main(int argc, const char ** argcv){
                 Force fb(- fa.x, -fa.y, -fa.z);
 
                 // b acceleration
-                universe.ax[j] -= fb.x/universe.m[i];
-                universe.ay[j] -= fb.y/universe.m[i];
-                universe.az[j] -= fb.z/universe.m[i];
+                universe.ax[j] -= fb.x/universe.m[j];
+                universe.ay[j] -= fb.y/universe.m[j];
+                universe.az[j] -= fb.z/universe.m[j];
                 }
 
                 // a acceleration
