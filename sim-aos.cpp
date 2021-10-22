@@ -1,6 +1,3 @@
-//
-// Created by ivan on 9/10/21.
-//
 using namespace std;
 
 #include <iostream>
@@ -102,35 +99,32 @@ int main(int argc, const char ** argcv){
         // write to file
         MyFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
-        << " " << universe[i].m;
-        MyFile << endl;
+        << " " << universe[i].m << endl;
     }
     
     MyFile.close();
 
     int curr_objects = num_objects;
 
-    bool Bmap[num_objects] = {true};  // bytemap of objects
+    bool deleted[num_objects] = {false}; // bytemap of objects -> if true, object is deleted
 
     /* ---
     KERNEL
     --- */
 
-    for(int iteration; iteration < num_iterations; iteration++){
+    for(int iteration = 0; iteration < num_iterations; iteration++){
         if(curr_objects == 0) break;
-        Object a(0,0,0,0);
+        //Object a(0,0,0,0);
+        
         for(int i = 0; i < num_objects; i++){
-            if(not Bmap[i]) continue;
-            a = universe[i];
-            Object b(0,0,0,0);
-            
+            if(deleted[i]) continue;
+            Object a = universe[i];
+            //Object b(0,0,0,0);
+
             for(int j = i + 1; j < num_objects; j++){
-                //cout << i << " " << j << endl;
-                //cout << Bmap[i] << endl;
-                if(not Bmap[j]) continue;
+                if(deleted[j]) continue;
                 
-                //cout << "p"<< endl;
-                b = universe[j];
+                Object b = universe[j];
 
                 /* ---
                 FORCE COMPUTATION
@@ -143,14 +137,10 @@ int main(int argc, const char ** argcv){
                 double dz = b.pz - a.pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                //cout << distance << endl;
-
                 if(distance < COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
-
-                    cout << "p" << endl;
 
                     // merge objects into a
                     a.m = a.m + b.m;
@@ -158,10 +148,10 @@ int main(int argc, const char ** argcv){
                     a.vy = a.vy + b.vy;
                     a.vz = a.vz + b.vz;
 
-                    // del object
+                    // del b
                     delete &(universe[j]);
                     curr_objects--;
-                    Bmap[j] = false;
+                    deleted[j] = true;
 
                     // force between a & b is 0
                 } else{
@@ -183,6 +173,8 @@ int main(int argc, const char ** argcv){
                 a.ay += fa.y/a.m;
                 a.az += fa.z/a.m;
 
+                //cout << "iteration " << iteration <<  ", object " << i << j << " | " << fa.x << " " << fa.y << " " << fa.z << " " << endl;
+
             }
             /* ---
             UPDATE POSITION
@@ -192,14 +184,26 @@ int main(int argc, const char ** argcv){
             double vy = a.vy + a.ay * time_step;
             double vz = a.vz + a.az * time_step;
 
+            //cout << "iteration " << iteration <<  ", object " << i << " | " << (vx-a.vx) << " " << (vy-a.vy) << " " << (vz-a.vz) << " " << endl;
+
             a.vx = vx;
             a.vy = vy;
             a.vz = vz;
+            
 
             // position calculation
             a.px += vx * time_step;
             a.py += vz * time_step;
             a.py += vz * time_step;
+
+
+            //double px = vx * time_step;
+            //double py = vx * time_step;
+            //double pz = vx * time_step;
+
+            //cout << "iteration " << iteration <<  ", object " << i << " | " << (px-a.px) << " " << (py-a.py) << " " << (pz-a.pz) << " " << endl;
+            
+            
 
             /* ---
             REBOUND EFFECT
@@ -228,6 +232,7 @@ int main(int argc, const char ** argcv){
                 a.pz = size_enclosure;
                 a.vz = - a.vz;
             }
+            //cout << "iteration " << iteration << ", object " << i << " | " << universe[i].px << " " << universe[i].py << " " << universe[i].pz << " | " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz << " | " << universe[i].m << endl;
         }
     }
 
@@ -236,15 +241,14 @@ int main(int argc, const char ** argcv){
     */
     ofstream OutFile("final_config.txt");
 
-    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
-    OutFile << endl;
+    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
 
     for (int i = 0; i < num_objects; i++){
+        if(deleted[i]) continue;
         // write to file
         OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
-        << " " << universe[i].m;
-        OutFile << endl;
+        << " " << universe[i].m << endl;
     }
 
     OutFile.close();
