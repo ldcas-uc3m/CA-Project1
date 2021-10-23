@@ -29,19 +29,29 @@ class Universe{
         Universe(int num_objects, int size_enclosure){
             objects = num_objects;
             size = size_enclosure;
+            px = (double *)malloc(sizeof(double) * num_objects);
+            py = (double *)malloc(sizeof(double) * num_objects);
+            pz = (double *)malloc(sizeof(double) * num_objects);
+            vx = (double *)malloc(sizeof(double) * num_objects);
+            vy = (double *)malloc(sizeof(double) * num_objects);
+            vz = (double *)malloc(sizeof(double) * num_objects);
+            m = (double *)malloc(sizeof(double) * num_objects);
+            ax = (double *)malloc(sizeof(double) * num_objects);
+            ay = (double *)malloc(sizeof(double) * num_objects);
+            az = (double *)malloc(sizeof(double) * num_objects);
         }
         int objects;
         int size;
-        double * px = (double *)malloc(sizeof(double)*objects);
-        double * py = (double *)malloc(sizeof(double)*objects);
-        double * pz = (double *)malloc(sizeof(double)*objects);
-        double * vx = (double *)malloc(sizeof(double)*objects);
-        double * vy = (double *)malloc(sizeof(double)*objects);
-        double * vz = (double *)malloc(sizeof(double)*objects);
-        double * m = (double *)malloc(sizeof(double)*objects);
-        double * ax = (double *)malloc(sizeof(double)*objects);
-        double * ay = (double *)malloc(sizeof(double)*objects);
-        double * az = (double *)malloc(sizeof(double)*objects);
+        double * px;
+        double * py;
+        double * pz;
+        double * vx;
+        double * vy;
+        double * vz;
+        double * m;
+        double * ax;
+        double * ay;
+        double * az;
 };
 
 
@@ -116,7 +126,7 @@ int main(int argc, const char ** argcv){
     
     int curr_objects = num_objects;
 
-    bool deleted[num_objects];  // bytemap of objects -> if true, object is deleted
+    bool *deleted = (bool *)calloc(num_objects, sizeof(bool));  // bytemap of objects -> if true, object is deleted
 
     /* ---
     KERNEL
