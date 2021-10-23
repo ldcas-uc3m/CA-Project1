@@ -106,20 +106,18 @@ int main(int argc, const char ** argcv){
 
     int curr_objects = num_objects;
 
-    bool deleted[num_objects] = {false}; // bytemap of objects -> if true, object is deleted
+    bool *deleted = (bool *)calloc(num_objects, sizeof(bool)); // bytemap of objects -> if true, object is deleted
 
     /* ---
     KERNEL
     --- */
-
+ 
     for(int iteration = 0; iteration < num_iterations; iteration++){
         if(curr_objects == 0) break;
-        //Object a(0,0,0,0);
-        
+          
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
             Object *a = &universe[i];
-            //Object b(0,0,0,0);
 
             for(int j = i + 1; j < num_objects; j++){
                 if(deleted[j]) continue;
@@ -172,10 +170,8 @@ int main(int argc, const char ** argcv){
                 a->ax += fa.x/a->m;
                 a->ay += fa.y/a->m;
                 a->az += fa.z/a->m;
-
-                //cout << "iteration " << iteration <<  ", object " << i << j << " | " << fa.x << " " << fa.y << " " << fa.z << " " << endl;
-
             }
+
             /* ---
             UPDATE POSITION
             --- */
@@ -184,25 +180,14 @@ int main(int argc, const char ** argcv){
             double vy = a->vy + a->ay * time_step;
             double vz = a->vz + a->az * time_step;
 
-            //cout << "iteration " << iteration <<  ", object " << i << " | " << (vx-a->vx) << " " << (vy-a->vy) << " " << (vz-a->vz) << " " << endl;
-
             a->vx = vx;
             a->vy = vy;
             a->vz = vz;
             
-
             // position calculation
             a->px += vx * time_step;
             a->py += vz * time_step;
-            a->py += vz * time_step;
-
-
-            //double px = vx * time_step;
-            //double py = vx * time_step;
-            //double pz = vx * time_step;
-
-            //cout << "iteration " << iteration <<  ", object " << i << " | " << (px-a->px) << " " << (py-a->py) << " " << (pz-a->pz) << " " << endl;
-            
+            a->py += vz * time_step;            
             
 
             /* ---
@@ -232,7 +217,6 @@ int main(int argc, const char ** argcv){
                 a->pz = size_enclosure;
                 a->vz = - a->vz;
             }
-            //cout << "iteration " << iteration << ", object " << i << " | " << universe[i].px << " " << universe[i].py << " " << universe[i].pz << " | " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz << " | " << universe[i].m << endl;
         }
     }
 
