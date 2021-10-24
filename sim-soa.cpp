@@ -256,9 +256,9 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * universe.m[i] * universe.m[j] * dy) / abs(pow(dy, 3));
-                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(pow(dy, 3));
-                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(pow(dz, 3));
+                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(dx*dx*dx);
+                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(dy*dy*dy);
+                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(dz*dz*dz);
 
                 Force fb(- fa.x, -fa.y, -fa.z);
 
@@ -289,7 +289,7 @@ int main(int argc, const char ** argcv){
 
             // position calculation
             universe.px[i] += vx * time_step;
-            universe.py[i] += vz * time_step;
+            universe.py[i] += vy * time_step;
             universe.py[i] += vz * time_step;
 
             /* ---
@@ -329,17 +329,12 @@ int main(int argc, const char ** argcv){
             << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
             << " " << universe.m[i] << endl;
             }
+
+
+            //cout << "iteration: " << iteration << ", element: " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << endl;
         }
     }
-    /*
-    for (int i = 0; i < num_objects; i++){
-        if(deleted[i]) continue;
-        // write to file
-        outFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
-        << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
-        << " " << universe.m[i] << endl;
-    }
-    */
+
     outFile.close();
     delete(&universe);
     return 0;
