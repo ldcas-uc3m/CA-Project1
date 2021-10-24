@@ -1,14 +1,12 @@
 using namespace std;
 
 #include <iostream>
-#include <vector>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <random>
 #include <cassert>
 #include <fstream>
-#include <array>
 
 
 class Force{
@@ -54,8 +52,8 @@ const double COL_DISTANCE = 1;  // minimum colision distance
 int num_objects;
 int num_iterations;
 int random_seed;
-int size_enclosure;
-int time_step;
+double size_enclosure;
+double time_step;
 
 
 int main(int argc, const char ** argcv){
@@ -74,8 +72,8 @@ int main(int argc, const char ** argcv){
     num_objects = atoi(argcv[1]);
     num_iterations = atoi(argcv[2]);
     random_seed = atoi(argcv[3]);
-    size_enclosure = atoi(argcv[4]);
-    time_step = atoi(argcv[5]);
+    size_enclosure = atof(argcv[4]);
+    time_step = atof(argcv[5]);
 
     // distribution generation
     random_device rd;
@@ -154,9 +152,9 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                    fa.x = (g * a->m * b->m * dy) / abs(pow(dy, 3));
-                    fa.y = (g * a->m * b->m * dy) / abs(pow(dy, 3));
-                    fa.z = (g * a->m * b->m * dz) / abs(pow(dz, 3));
+                    fa.x = (g * a->m * b->m * dx) / abs(dx*dx*dx);
+                    fa.y = (g * a->m * b->m * dy) / abs(dy*dy*dy);
+                    fa.z = (g * a->m * b->m * dz) / abs(dz*dz*dz);
 
                     Force fb(- fa.x, -fa.y, -fa.z);
 
@@ -186,7 +184,7 @@ int main(int argc, const char ** argcv){
             
             // position calculation
             a->px += vx * time_step;
-            a->py += vz * time_step;
+            a->py += vy * time_step;
             a->py += vz * time_step;            
             
 
