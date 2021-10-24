@@ -65,13 +65,52 @@ int main(int argc, const char ** argcv){
     --- */
 
     // check arguments
-    if (argc != 6 || num_objects < 0 || num_iterations < 0 
-        || random_seed < 0 || size_enclosure < 0 || time_step < 0){
-        cout << "sim-aos invoked with " << argc << "parameters." 
-        << endl << "Arguments: "<< endl << " num_objects: " << argcv[1] 
-        << endl << " num_iterations: " << argcv[2] << endl << " random_seed: " 
-        << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl 
-        << " time_step: " << argcv[5] << endl ;
+    if(argc < 6){
+        switch(argc){
+            case 5:
+                cerr  << "sim-soa invoked with " << argc << " parameters."
+                 << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
+                 << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
+                 << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl
+                 << " time_step: ?"<< endl ;
+                break;
+            case 4:
+                cerr << "sim-soa invoked with " << argc << " parameters."
+                     << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
+                     << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
+                     << argcv[3] << endl << " size_enclosure: ?"<< endl
+                     << " time_step: ?"<< endl ;
+                break;
+            case 3:
+                cerr << "sim-soa invoked with " << argc << " parameters."
+                     << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
+                     << endl << " num_iterations: " << argcv[2] << endl << " random_seed: ?"
+                     << endl << " size_enclosure: ?"<< endl
+                     << " time_step: ?"<< endl ;
+                break;
+            case 2:
+                cerr << "sim-soa invoked with " << argc << " parameters."
+                     << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
+                     << endl << " num_iterations: ?" << endl << " random_seed: ?"
+                     << endl << " size_enclosure: ?"<< endl
+                     << " time_step: ?"<< endl ;
+                break;
+            case 1:
+                cerr << "sim-soa invoked with " << argc << " parameters."
+                     << endl << "Arguments: "<< endl << " num_objects: ?"
+                     << endl << " num_iterations: ?" << endl << " random_seed: ?"
+                     << endl << " size_enclosure: ?"<< endl
+                     << " time_step: ?"<< endl ;
+                break;
+        }
+        return -1;
+    }else if(argc > 6){
+        cerr << "sim-soa invoked with " << argc << " parameters."
+             << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
+             << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
+             << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl
+             << " time_step: "<< argcv[5] << endl ;
+        return -1;
     }
 
     // parameters init & casting
@@ -80,6 +119,40 @@ int main(int argc, const char ** argcv){
     random_seed = atoi(argcv[3]);
     size_enclosure = atoi(argcv[4]);
     time_step = atoi(argcv[5]);
+
+    // chech correct parameters
+    if(num_objects <= 0) {
+        cerr << "Invalid number of object "<<endl << "sim-aos invoked with " << argc << " parameters."
+              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
+              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
+              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
+              << " time_step: "<< time_step << endl ;
+        return-2;
+    }
+    if(num_iterations <= 0){
+        cerr << "Invalid number of iterations "<<endl << "sim-aos invoked with " << argc << " parameters."
+             << endl << "Arguments: "<< endl << " num_objects: " << num_objects
+             << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
+             << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
+             << " time_step: "<< time_step << endl ;
+        return -2;
+    }
+    if( random_seed<= 0){
+        cerr << "Invalid seed "<<endl << "sim-aos invoked with " << argc << " parameters."
+             << endl << "Arguments: "<< endl << " num_objects: " << num_objects
+             << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
+             << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
+             << " time_step: "<< time_step << endl ;
+        return-2;
+    }
+    if (size_enclosure<= 0){
+        cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
+             << endl << "Arguments: "<< endl << " num_objects: " << num_objects
+             << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
+             << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
+             << " time_step: "<< time_step << endl ;
+        return-2;
+    }
 
     // distribution generation
     random_device rd;
@@ -92,21 +165,22 @@ int main(int argc, const char ** argcv){
     // memory alloc
     Object * universe = (Object*)malloc(sizeof(Object) * num_objects);
     
-    ofstream MyFile("init_config.txt", ofstream::out);  // open file
+    // init file
+    ofstream inFile("init_config.txt", ofstream::out);  // open file
     
-    MyFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
-    MyFile << endl;
+    inFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
+    inFile << endl;
     
     // populate
     for (int i = 0; i < num_objects; i++){
         universe[i] = Object(dis(gen64), dis(gen64), dis(gen64), d(gen64));
         // write to file
-        MyFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+        inFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
         << " " << universe[i].m << endl;
     }
     
-    MyFile.close();
+    inFile.close();
 
     /* ---
     OUTPUT
