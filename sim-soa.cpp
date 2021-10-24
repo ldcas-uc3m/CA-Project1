@@ -52,6 +52,18 @@ class Universe{
         double * ax;
         double * ay;
         double * az;
+
+        ~Universe(){
+            free(px);
+            free(py);
+            free(pz);
+            free(vx);
+            free(vy);
+            free(vy);
+            free(ax);
+            free(ay);
+            free(az);
+        }
 };
 
 
@@ -254,4 +266,6 @@ int main(int argc, const char ** argcv){
     }
 
     OutFile.close();
+
+    delete(&universe);
 }
