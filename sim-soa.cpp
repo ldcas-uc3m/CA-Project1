@@ -181,12 +181,27 @@ int main(int argc, const char ** argcv){
     // big bang
     Universe universe(num_objects, size_enclosure);
     
-    //init file
     ofstream inFile("init_config.txt", ofstream::out);  // open file
+    inFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
     
-    inFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
-    inFile << endl;
+    for(int i = 0; i < num_objects; i++){
+        universe.px[i] = dis(gen64);
+        universe.py[i] = dis(gen64);
+        universe.pz[i] = dis(gen64);
+        universe.vx[i] = 0;
+        universe.vy[i] = 0;
+        universe.vz[i] = 0;
+        universe.m[i] = d(gen64);
+        universe.ax[i] = 0;
+        universe.ay[i] = 0;
+        universe.az[i] = 0;
 
+        inFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i]
+        << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
+        << " " << universe.m[i] << endl;
+    }
+
+    inFile.close();
     
     /* ---
     OUTPUT
@@ -208,27 +223,6 @@ int main(int argc, const char ** argcv){
         if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
-
-            // populate
-            if(iteration == 0){
-                universe.px[i] = dis(gen64);
-                universe.py[i] = dis(gen64);
-                universe.pz[i] = dis(gen64);
-                universe.vx[i] = 0;
-                universe.vy[i] = 0;
-                universe.vz[i] = 0;
-                universe.m[i] = d(gen64);
-                universe.ax[i] = 0;
-                universe.ay[i] = 0;
-                universe.az[i] = 0;
-
-                // write to file
-                inFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i]
-                << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
-                << " " << universe.m[i] << endl;
-            }else if(iteration == 1){
-                inFile.close();
-            }
 
             for(int j = i + 1; j < num_objects; j++){
                 if(deleted[j]) continue;
