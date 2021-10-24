@@ -87,7 +87,7 @@ int main(int argc, const char ** argcv){
     time_step = atoi(argcv[5]);
 
     // distribution generation
-    std::random_device rd;
+    random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
     normal_distribution<double> d{pow(10, 21),pow(10, 15)};
@@ -124,9 +124,17 @@ int main(int argc, const char ** argcv){
     
     MyFile.close();
     
-    int curr_objects = num_objects;
+    /* ---
+    OUTPUT
+    --- */
+    ofstream OutFile("final_config.txt");
 
+    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
+
+    // extra vars
+    int curr_objects = num_objects;
     bool *deleted = (bool *)calloc(num_objects, sizeof(bool));  // bytemap of objects -> if true, object is deleted
+
 
     /* ---
     KERNEL
@@ -237,21 +245,13 @@ int main(int argc, const char ** argcv){
     }
 
     /*
-    OUTPUT
-    */
-    ofstream OutFile("final_config.txt");
-
-    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
-    OutFile << endl;
-
     for (int i = 0; i < num_objects; i++){
         if(deleted[i]) continue;
         // write to file
         OutFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
         << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
-        << " " << universe.m[i];
-        OutFile << endl;
-    }
+        << " " << universe.m[i] << endl;
+    }*/
 
     OutFile.close();
 }
