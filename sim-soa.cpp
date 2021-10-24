@@ -161,7 +161,7 @@ int main(int argc, const char ** argcv){
              << " time_step: "<< time_step << endl ;
         return-2;
     }
-    if (size_enclosure<= 0){
+    if (size_enclosure<= 0 || size_enclosure < num_objects){
         cerr << "Invalid box size "<< endl << "sim-soa invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
