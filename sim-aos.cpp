@@ -54,8 +54,8 @@ const double COL_DISTANCE = 1;  // minimum colision distance
 int num_objects;
 int num_iterations;
 int random_seed;
-int size_enclosure;
-int time_step;
+double size_enclosure;
+double time_step;
 
 
 int main(int argc, const char ** argcv){
@@ -240,9 +240,9 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                    fa.x = (g * a->m * b->m * dy) / abs(pow(dy, 3));
-                    fa.y = (g * a->m * b->m * dy) / abs(pow(dy, 3));
-                    fa.z = (g * a->m * b->m * dz) / abs(pow(dz, 3));
+                    fa.x = (g * a->m * b->m * dx) / abs(dx*dx*dx);
+                    fa.y = (g * a->m * b->m * dy) / abs(dy*dy*dy);
+                    fa.z = (g * a->m * b->m * dz) / abs(dz*dz*dz);
 
                     Force fb(- fa.x, -fa.y, -fa.z);
 
@@ -272,7 +272,7 @@ int main(int argc, const char ** argcv){
             
             // position calculation
             a->px += vx * time_step;
-            a->py += vz * time_step;
+            a->py += vy * time_step;
             a->py += vz * time_step;            
             
 
