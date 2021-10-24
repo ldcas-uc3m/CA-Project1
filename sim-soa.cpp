@@ -76,8 +76,8 @@ const double COL_DISTANCE = 1;  // minimum colision distance
 int num_objects;
 int num_iterations;
 int random_seed;
-int size_enclosure;
-int time_step;
+double size_enclosure;
+double time_step;
 
 
 int main(int argc, const char ** argcv){
@@ -134,8 +134,8 @@ int main(int argc, const char ** argcv){
     num_objects = atoi(argcv[1]);
     num_iterations = atoi(argcv[2]);
     random_seed = atoi(argcv[3]);
-    size_enclosure = atoi(argcv[4]);
-    time_step = atoi(argcv[5]);
+    size_enclosure = atof(argcv[4]);
+    time_step = atof(argcv[5]);
 
     if(num_objects <= 0) {
         cerr << "Invalid number of object "<<endl << "sim-soa invoked with " << argc << " parameters."
@@ -252,9 +252,9 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * universe.m[i] * universe.m[j] * dy) / abs(pow(dy, 3));
-                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(pow(dy, 3));
-                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(pow(dz, 3));
+                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(dx*dx*dx);
+                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(dy*dy*dy);
+                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(dz*dz*dz);
 
                 Force fb(- fa.x, -fa.y, -fa.z);
 
@@ -285,7 +285,7 @@ int main(int argc, const char ** argcv){
 
             // position calculation
             universe.px[i] += vx * time_step;
-            universe.py[i] += vz * time_step;
+            universe.py[i] += vy * time_step;
             universe.py[i] += vz * time_step;
 
             /* ---
@@ -316,7 +316,7 @@ int main(int argc, const char ** argcv){
                 universe.vz[i] = - universe.vz[i];
             }
 
-            //cout << "iteration " << iteration << ", object " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << " | " << universe.m[i] << endl;
+            cout << "iteration " << iteration << ", object " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << " | " << universe.m[i] << endl;
         }
     }
 
