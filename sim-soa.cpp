@@ -85,35 +85,35 @@ int main(int argc, const char ** argcv){
         if(argc<6){
             switch (argc) {
                 case 5:
-                    cerr  << "sim-aos invoked with " << argc << " parameters."
+                    cerr  << "sim-soa invoked with " << argc << " parameters."
                          << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                          << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
                          << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl
                          << " time_step: ?"<< endl ;
                     break;
                 case 4:
-                    cerr << "sim-aos invoked with " << argc << " parameters."
+                    cerr << "sim-soa invoked with " << argc << " parameters."
                          << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                          << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
                          << argcv[3] << endl << " size_enclosure: ?"<< endl
                          << " time_step: ?"<< endl ;
                     break;
                 case 3:
-                    cerr << "sim-aos invoked with " << argc << " parameters."
+                    cerr << "sim-soa invoked with " << argc << " parameters."
                          << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                          << endl << " num_iterations: " << argcv[2] << endl << " random_seed: ?"
                          << endl << " size_enclosure: ?"<< endl
                          << " time_step: ?"<< endl ;
                     break;
                 case 2:
-                    cerr << "sim-aos invoked with " << argc << " parameters."
+                    cerr << "sim-soa invoked with " << argc << " parameters."
                          << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                          << endl << " num_iterations: ?" << endl << " random_seed: ?"
                          << endl << " size_enclosure: ?"<< endl
                          << " time_step: ?"<< endl ;
                     break;
                 case 1:
-                    cerr << "sim-aos invoked with " << argc << " parameters."
+                    cerr << "sim-soa invoked with " << argc << " parameters."
                          << endl << "Arguments: "<< endl << " num_objects: ?"
                          << endl << " num_iterations: ?" << endl << " random_seed: ?"
                          << endl << " size_enclosure: ?"<< endl
@@ -123,7 +123,7 @@ int main(int argc, const char ** argcv){
             return -1;
     }
         if(argc > 6){
-            cerr  << "sim-aos invoked with " << argc << " parameters."
+            cerr  << "sim-soa invoked with " << argc << " parameters."
                   << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                   << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
                   << argcv[3] << endl << " size_enclosure: " << argcv[4] << endl
@@ -138,7 +138,7 @@ int main(int argc, const char ** argcv){
     time_step = atoi(argcv[5]);
 
     if(num_objects <= 0) {
-        cerr << "Invalid number of object "<<endl << "sim-aos invoked with " << argc << " parameters."
+        cerr << "Invalid number of object "<<endl << "sim-soa invoked with " << argc << " parameters."
               << endl << "Arguments: "<< endl << " num_objects: " << num_objects
               << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
               << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
@@ -146,7 +146,7 @@ int main(int argc, const char ** argcv){
         return-2;
     }
     if(num_iterations <= 0){
-        cerr << "Invalid number of iterations "<<endl << "sim-aos invoked with " << argc << " parameters."
+        cerr << "Invalid number of iterations "<<endl << "sim-soa invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
@@ -154,7 +154,7 @@ int main(int argc, const char ** argcv){
         return -2;
     }
     if( random_seed<= 0){
-        cerr << "Invalid seed "<<endl << "sim-aos invoked with " << argc << " parameters."
+        cerr << "Invalid seed "<<endl << "sim-soa invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
@@ -162,7 +162,7 @@ int main(int argc, const char ** argcv){
         return-2;
     }
     if (size_enclosure<= 0){
-        cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
+        cerr << "Invalid box size "<< endl << "sim-soa invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
