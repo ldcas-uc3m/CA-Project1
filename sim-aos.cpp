@@ -60,6 +60,10 @@ int time_step;
 
 int main(int argc, const char ** argcv){
 
+    /* ---
+    PARAMETERS
+    --- */
+
     // check arguments
     if (argc != 6 || num_objects < 0 || num_iterations < 0 
         || random_seed < 0 || size_enclosure < 0 || time_step < 0){
@@ -104,8 +108,16 @@ int main(int argc, const char ** argcv){
     
     MyFile.close();
 
-    int curr_objects = num_objects;
+    /* ---
+    OUTPUT
+    --- */
+    ofstream OutFile("final_config.txt");
 
+    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
+
+
+    // extra vars
+    int curr_objects = num_objects;
     bool *deleted = (bool *)calloc(num_objects, sizeof(bool)); // bytemap of objects -> if true, object is deleted
 
     /* ---
@@ -217,23 +229,17 @@ int main(int argc, const char ** argcv){
                 a->pz = size_enclosure;
                 a->vz = - a->vz;
             }
+
+            // print to output
+            if((iteration = num_iterations - 1) || (deleted[i + 1] && curr_objects == 1)){  // final positions
+
+            OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+            << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
+            << " " << universe[i].m << endl;
+            }
         }
     }
-
-    /*
-    OUTPUT
-    */
-    ofstream OutFile("final_config.txt");
-
-    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
-
-    for (int i = 0; i < num_objects; i++){
-        if(deleted[i]) continue;
-        // write to file
-        OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
-        << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
-        << " " << universe[i].m << endl;
-    }
-
     OutFile.close();
+    delete(&universe);
+    return 0;
 }
