@@ -122,7 +122,7 @@ int main(int argc, const char ** argcv){
             }
             return -1;
     }
-        if(argc > 6){
+        else if(argc > 6){
             cerr  << "sim-soa invoked with " << argc << " parameters."
                   << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
                   << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
