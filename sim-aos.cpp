@@ -221,7 +221,7 @@ int main(int argc, const char ** argcv){
                 double dz = b->pz - a->pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                if(distance < COL_DISTANCE){
+                if((dx <= COL_DISTANCE) || (dy <= COL_DISTANCE) || (dz <= COL_DISTANCE)){
                     /* ---
                     OBJECT COLLISION
                     --- */
@@ -233,7 +233,7 @@ int main(int argc, const char ** argcv){
                     a->vz = a->vz + b->vz;
 
                     // del b
-                    delete &(universe[j]);
+                    delete &(universe[j]);  // FIXME
                     curr_objects--;
                     deleted[j] = true;
 
