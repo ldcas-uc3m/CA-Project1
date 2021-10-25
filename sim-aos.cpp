@@ -205,12 +205,13 @@ int main(int argc, const char ** argcv){
                 double dx = b->px - a->px;
                 double dy = b->py - a->py;
                 double dz = b->pz - a->pz;
-                double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                if(distance < COL_DISTANCE){
+                if((dx <= COL_DISTANCE) || (dy <= COL_DISTANCE) || (dz <= COL_DISTANCE)){
                     /* ---
                     OBJECT COLLISION
                     --- */
+
+                    cout << "p" << endl;
 
                     // merge objects into a
                     a->m = a->m + b->m;
@@ -219,7 +220,7 @@ int main(int argc, const char ** argcv){
                     a->vz = a->vz + b->vz;
 
                     // del b
-                    delete &(universe[j]);
+                    //delete &(universe[j]);
                     curr_objects--;
                     deleted[j] = true;
 
