@@ -53,23 +53,11 @@ class Universe{
         double * ax;
         double * ay;
         double * az;
-
-        ~Universe(){
-            free(px);
-            free(py);
-            free(pz);
-            free(vx);
-            free(vy);
-            free(vy);
-            free(ax);
-            free(ay);
-            free(az);
-        }
 };
 
 
 // constants
-const double g = 6.674 * pow(10, -11);
+const double g = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
 
 // Global variables
@@ -143,7 +131,7 @@ int main(int argc, const char ** argcv){
               << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
               << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
               << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if(num_iterations <= 0){
         cerr << "Invalid number of iterations "<<endl << "sim-soa invoked with " << argc << " parameters."
@@ -159,7 +147,7 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if (size_enclosure<= 0 || size_enclosure < num_objects){
         cerr << "Invalid box size "<< endl << "sim-soa invoked with " << argc << " parameters."
@@ -167,14 +155,14 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
 
     // distribution generation
     std::random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<double> d{pow(10, 21),pow(10, 15)};
+    normal_distribution<> d{10e21, 10e15};
 
     gen64.seed(random_seed);  // introduce seed
 
@@ -232,9 +220,9 @@ int main(int argc, const char ** argcv){
                 double dx = universe.px[j] - universe.px[i];
                 double dy = universe.py[j] - universe.py[i];
                 double dz = universe.pz[j] - universe.pz[i];
-                //double distance = sqrt(dx*dx + dy*dy + dz*dz);
+                double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
 
-                if((dx <= COL_DISTANCE) && (dy <= COL_DISTANCE) && (dz <= COL_DISTANCE)){
+                if(distance <= COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
@@ -252,9 +240,9 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(dx*dx*dx);
-                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(dy*dy*dy);
-                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(dz*dz*dz);
+                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(distance*distance*distance);
+                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(distance*distance*distance);
+                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
 
                 Force fb(- fa.x, -fa.y, -fa.z);
 
