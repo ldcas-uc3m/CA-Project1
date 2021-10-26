@@ -339,5 +339,5 @@ int main(int argc, const char ** argcv){
 
     OutFile.close();
 
-    delete(&universe);
+    //delete(&universe);
 }
