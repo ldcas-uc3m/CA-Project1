@@ -340,8 +340,4 @@ int main(int argc, const char ** argcv){
     OutFile.close();
 
     //delete(&universe);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 5b4db9576737f88d19aafb8271b5059b76b60911
