@@ -206,7 +206,7 @@ int main(int argc, const char ** argcv){
                 double dy = b->py - a->py;
                 double dz = b->pz - a->pz;
 
-                if((dx <= COL_DISTANCE) || (dy <= COL_DISTANCE) || (dz <= COL_DISTANCE)){
+                if((dx <= COL_DISTANCE) && (dy <= COL_DISTANCE) && (dz <= COL_DISTANCE)){
                     /* ---
                     OBJECT COLLISION
                     --- */
