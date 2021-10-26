@@ -234,7 +234,7 @@ int main(int argc, const char ** argcv){
                 double dz = universe.pz[j] - universe.pz[i];
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                if((dx <= COL_DISTANCE) || (dy <= COL_DISTANCE) || (dz <= COL_DISTANCE)){
+                if((dx <= COL_DISTANCE) && (dy <= COL_DISTANCE) && (dz <= COL_DISTANCE)){
                     /* ---
                     OBJECT COLLISION
                     --- */
@@ -339,5 +339,5 @@ int main(int argc, const char ** argcv){
 
     OutFile.close();
 
-    delete(&universe);
+    //delete(&universe);
 }
