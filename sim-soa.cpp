@@ -232,7 +232,7 @@ int main(int argc, const char ** argcv){
                 double dx = universe.px[j] - universe.px[i];
                 double dy = universe.py[j] - universe.py[i];
                 double dz = universe.pz[j] - universe.pz[i];
-                double distance = sqrt(dx*dx + dy*dy + dz*dz);
+                //double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
                 if((dx <= COL_DISTANCE) && (dy <= COL_DISTANCE) && (dz <= COL_DISTANCE)){
                     /* ---
