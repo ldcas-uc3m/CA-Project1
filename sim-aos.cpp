@@ -150,7 +150,7 @@ int main(int argc, const char ** argcv){
 
 
     // distribution generation
-    random_device rd;
+    std::random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
     normal_distribution<> d{10e21, 10e15};
