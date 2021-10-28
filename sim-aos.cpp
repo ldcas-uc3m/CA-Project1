@@ -259,7 +259,7 @@ int main(int argc, const char ** argcv){
             // position calculation
             a->px += vx * time_step;
             a->py += vy * time_step;
-            a->py += vz * time_step;            
+            a->pz += vz * time_step;            
             
 
             /* ---
