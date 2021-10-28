@@ -203,14 +203,16 @@ int main(int argc, const char ** argcv){
     /* ---
     KERNEL
     --- */
-    
+    ofstream acelerationsf("acelerations.txt");
+   // ofstream forcesf("forces.txt");
+    ofstream positionsf("positions.txt");
     for(int iteration = 0; iteration < num_iterations; iteration++){
         if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
             for(int j = i + 1; j < num_objects; j++){
                 if(deleted[j]) continue;
-                
+            
                 /* ---
                 FORCE COMPUTATION
                 --- */
@@ -221,6 +223,7 @@ int main(int argc, const char ** argcv){
                 double dy = universe.py[j] - universe.py[i];
                 double dz = universe.pz[j] - universe.pz[i];
                 double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
+                
 
                 if(distance <= COL_DISTANCE){
                     /* ---
@@ -245,36 +248,35 @@ int main(int argc, const char ** argcv){
                 fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
 
                 Force fb(- fa.x, -fa.y, -fa.z);
-
+              //  forcesf <<fb.x<<" "<<fb.y<<" "<<fb.x<<endl;
                 // b acceleration
                 universe.ax[j] -= fb.x/universe.m[j];
                 universe.ay[j] -= fb.y/universe.m[j];
                 universe.az[j] -= fb.z/universe.m[j];
                 }
-
+               
                 // a acceleration
                 universe.ax[i] += fa.x/universe.m[i];
                 universe.ay[i] += fa.y/universe.m[i];
                 universe.az[i] += fa.z/universe.m[i];
-
-            }
             
+            }
             /* ---
             UPDATE POSITION
             --- */
             // velocity calculation
-            double vx = universe.vx[i] + universe.ax[i] * time_step;
-            double vy = universe.vy[i] + universe.ay[i] * time_step;
-            double vz = universe.vz[i] + universe.az[i] * time_step;
+            double vx = universe.vx[i] + (universe.ax[i] * time_step);
+            double vy = universe.vy[i] + (universe.ay[i] * time_step);
+            double vz = universe.vz[i] + (universe.az[i] * time_step);
 
             universe.vx[i] = vx;
             universe.vy[i] = vy;
             universe.vz[i] = vz;
-
+     
             // position calculation
             universe.px[i] += vx * time_step;
             universe.py[i] += vy * time_step;
-            universe.py[i] += vz * time_step;
+            universe.pz[i] += vz * time_step;
 
             /* ---
             REBOUND EFFECT
@@ -303,11 +305,17 @@ int main(int argc, const char ** argcv){
                 universe.pz[i] = size_enclosure;
                 universe.vz[i] = - universe.vz[i];
             }
+          
+            acelerationsf <<universe.ax[i]<< " " <<universe.ay[i]<< " " <<universe.az[i] <<endl;
+           // positionsf <<universe.px[i]<< " "<<universe.py[i]<<" "<<" "<<universe.pz[i]<<endl;
+            
 
             //cout << "iteration " << iteration << ", object " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << " | " << universe.m[i] << endl;
         }
     }
-
+    //acelerationsf.close();
+    //forcesf.close();
+    positionsf.close();
     /*
     OUTPUT
     */
