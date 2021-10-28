@@ -11,8 +11,6 @@ using namespace std;
 class Universe{
     public:
         Universe(int num_objects, int size_enclosure){
-            objects = num_objects;
-            size = size_enclosure;
             px = (double *)malloc(sizeof(double) * num_objects);
             py = (double *)malloc(sizeof(double) * num_objects);
             pz = (double *)malloc(sizeof(double) * num_objects);
@@ -23,6 +21,8 @@ class Universe{
             ax = (double *)malloc(sizeof(double) * num_objects);
             ay = (double *)malloc(sizeof(double) * num_objects);
             az = (double *)malloc(sizeof(double) * num_objects);
+            objects = num_objects;
+            size = size_enclosure;
         }
         double * px;
         double * py;
