@@ -161,8 +161,15 @@ int main(int argc, const char ** argcv){
     inFile << endl;
     
     // populate
+
+    double x, y, z, m;
     for (int i = 0; i < num_objects; i++){
-        universe[i] = Object(dis(gen64), dis(gen64), dis(gen64), d(gen64));
+        
+        x = dis(gen64);
+        y = dis(gen64);
+        z = dis(gen64);
+        m = d(gen64);
+        universe[i] = Object(x, y, z, m);
         // write to file
         inFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
