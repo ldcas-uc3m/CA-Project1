@@ -15,21 +15,24 @@ class Object{
             px = x;
             py = y;
             pz = z;
+            vx = 0;
+            vy = 0;
+            vz = 0;
             m = mass;
             ax = 0;
             ay = 0;
             az = 0;
         }
-        double px = 0;
-        double py = 0;
-        double pz = 0;
-        double vx = 0;
-        double vy = 0;
-        double vz = 0;
-        double ax = 0;
-        double ay = 0;
-        double az = 0;
+        double px;
+        double py;
+        double pz;
+        double vx;
+        double vy;
+        double vz;
         double m;
+        double ax;
+        double ay;
+        double az;    
 };
 
 // constants
@@ -206,7 +209,7 @@ int main(int argc, const char ** argcv){
                 double dx = b->px - a->px;
                 double dy = b->py - a->py;
                 double dz = b->pz - a->pz;
-                double distance = sqrt(dx*dx + dy*dy + dz*dz);
+                double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
 
                 if(distance <= COL_DISTANCE){
                     /* ---
