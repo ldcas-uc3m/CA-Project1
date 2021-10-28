@@ -1,27 +1,13 @@
 using namespace std;
 
 #include <iostream>
-#include <vector>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <random>
 #include <cassert>
 #include <fstream>
-#include <array>
 
-
-class Force{
-    public:
-        Force(double fx, double fy, double fz){
-            x = fx;
-            y = fy;
-            z = fz;
-        }
-        double x;
-        double y;
-        double z;
-};
 
 class Object{
     public:
@@ -47,7 +33,7 @@ class Object{
 };
 
 // constants
-const double g = 6.674 * pow(10, -11);
+const double g = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
 
 // Global variables
@@ -127,7 +113,7 @@ int main(int argc, const char ** argcv){
               << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
               << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
               << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if(num_iterations <= 0){
         cerr << "Invalid number of iterations "<<endl << "sim-aos invoked with " << argc << " parameters."
@@ -143,7 +129,7 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if (size_enclosure<= 0){
         cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
@@ -151,14 +137,14 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
 
     // distribution generation
     random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<double> d{pow(10, 21),pow(10, 15)};
+    normal_distribution<> d{10e21, 10e15};
     
     gen64.seed(random_seed);  // introduce seed
 
@@ -199,8 +185,6 @@ int main(int argc, const char ** argcv){
     --- */
  
     for(int iteration = 0; iteration < num_iterations; iteration++){
-        if(curr_objects == 0) break;
-          
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
             Object *a = &universe[i];
@@ -213,7 +197,10 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                Force fa(0, 0, 0);
+
+                double fax = 0;
+                double fay = 0;
+                double faz = 0;
 
                 // distance
                 double dx = b->px - a->px;
@@ -221,41 +208,42 @@ int main(int argc, const char ** argcv){
                 double dz = b->pz - a->pz;
                 double distance = sqrt(dx*dx + dy*dy + dz*dz);
 
-                if((dx <= COL_DISTANCE) && (dy <= COL_DISTANCE) && (dz <= COL_DISTANCE)){
+                if(distance <= COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
 
                     // merge objects into a
-                    a->m = a->m + b->m;
                     a->vx = a->vx + b->vx;
                     a->vy = a->vy + b->vy;
                     a->vz = a->vz + b->vz;
+                    a->m = a->m + b->m;
 
                     // del b
-                    delete &(universe[j]);  // FIXME
                     curr_objects--;
                     deleted[j] = true;
 
                     // force between a & b is 0
                 } else{
                 
-                    fa.x = (g * a->m * b->m * dx) / abs(dx*dx*dx);
-                    fa.y = (g * a->m * b->m * dy) / abs(dy*dy*dy);
-                    fa.z = (g * a->m * b->m * dz) / abs(dz*dz*dz);
+                    fax = (g * a->m * b->m * dx) / abs(distance*distance*distance);
+                    fay = (g * a->m * b->m * dy) / abs(distance*distance*distance);
+                    faz = (g * a->m * b->m * dz) / abs(distance*distance*distance);
 
-                    Force fb(- fa.x, -fa.y, -fa.z);
+                    double fbx = -fax;
+                    double fby = -fay;
+                    double fbz = -faz;
 
                     // b acceleration
-                    b->ax -= fb.x/b->m;
-                    b->ay -= fb.y/b->m;
-                    b->az -= fb.z/b->m;
+                    b->ax -= fbx/b->m;
+                    b->ay -= fby/b->m;
+                    b->az -= fbz/b->m;
                 }
 
                 // a acceleration
-                a->ax += fa.x/a->m;
-                a->ay += fa.y/a->m;
-                a->az += fa.z/a->m;
+                a->ax += fax/a->m;
+                a->ay += fay/a->m;
+                a->az += faz/a->m;
             }
 
             /* ---
@@ -305,7 +293,7 @@ int main(int argc, const char ** argcv){
             }
 
             // print to output
-            if((iteration = num_iterations - 1) || (deleted[i + 1] && curr_objects == 1)){  // final positions
+            if((iteration = num_iterations - 1) || curr_objects == 1){  // final positions
 
             OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
             << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
@@ -314,6 +302,5 @@ int main(int argc, const char ** argcv){
         }
     }
     OutFile.close();
-    //delete(&universe);
     return 0;
 }
