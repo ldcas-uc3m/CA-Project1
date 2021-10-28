@@ -19,9 +19,9 @@ class Object{
             vy = 0;
             vz = 0;
             m = mass;
-            ax = 0;
-            ay = 0;
-            az = 0;
+            fx = 0;
+            fy = 0;
+            fz = 0;
         }
         double px;
         double py;
@@ -30,9 +30,9 @@ class Object{
         double vy;
         double vz;
         double m;
-        double ax;
-        double ay;
-        double az;    
+        double fx;
+        double fy;
+        double fz;    
 };
 
 // constants
@@ -208,10 +208,6 @@ int main(int argc, const char ** argcv){
                 FORCE COMPUTATION
                 --- */
 
-                double fax = 0;
-                double fay = 0;
-                double faz = 0;
-
                 // distance
                 double dx = b->px - a->px;
                 double dy = b->py - a->py;
@@ -235,39 +231,47 @@ int main(int argc, const char ** argcv){
 
                     // force between a & b is 0
                 } else{
-                
-                    fax = (g * a->m * b->m * dx) / abs(distance*distance*distance);
-                    fay = (g * a->m * b->m * dy) / abs(distance*distance*distance);
-                    faz = (g * a->m * b->m * dz) / abs(distance*distance*distance);
+                    
+                    
+                    double dfx = (g * a->m * b->m * dx) / (distance*distance*distance);
+                    double dfy = (g * a->m * b->m * dy) / (distance*distance*distance);
+                    double dfz = (g * a->m * b->m * dz) / (distance*distance*distance);
 
-                    // b acceleration
-                    b->ax -= -fax/b->m;
-                    b->ay -= -fay/b->m;
-                    b->az -= -faz/b->m;
+                    // a forces
+                    a->fx += dfx;
+                    a->fy += dfy;
+                    a->fz += dfz;
+
+                    // b forces
+                    b->fx -= dfx;
+                    b->fy -= dfy;
+                    b->fz -= dfz;
                 }
 
-                // a acceleration
-                a->ax += fax/a->m;
-                a->ay += fay/a->m;
-                a->az += faz/a->m;
             }
 
             /* ---
             UPDATE POSITION
             --- */
-            // velocity calculation
-            double vx = a->vx + a->ax * time_step;
-            double vy = a->vy + a->ay * time_step;
-            double vz = a->vz + a->az * time_step;
+            // acceleration calculation
+            double ax = a->fx/a->m;
+            double ay = a->fy/a->m;
+            double az = a->fz/a->m;
 
-            a->vx = vx;
-            a->vy = vy;
-            a->vz = vz;
+            // reset force
+            a->fx = 0;
+            a->fy = 0;
+            a->fz = 0;
+            
+            // velocity calculation
+            a->vx += ax * time_step;
+            a->vy += ay * time_step;
+            a->vz += az * time_step;
             
             // position calculation
-            a->px += vx * time_step;
-            a->py += vy * time_step;
-            a->pz += vz * time_step;            
+            a->px += a->vx * time_step;
+            a->py += a->vy * time_step;
+            a->pz += a->vz * time_step;            
             
 
             /* ---
