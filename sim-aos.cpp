@@ -233,14 +233,10 @@ int main(int argc, const char ** argcv){
                     fay = (g * a->m * b->m * dy) / abs(distance*distance*distance);
                     faz = (g * a->m * b->m * dz) / abs(distance*distance*distance);
 
-                    double fbx = -fax;
-                    double fby = -fay;
-                    double fbz = -faz;
-
                     // b acceleration
-                    b->ax -= fbx/b->m;
-                    b->ay -= fby/b->m;
-                    b->az -= fbz/b->m;
+                    b->ax -= -fax/b->m;
+                    b->ay -= -fay/b->m;
+                    b->az -= -faz/b->m;
                 }
 
                 // a acceleration
@@ -264,7 +260,7 @@ int main(int argc, const char ** argcv){
             // position calculation
             a->px += vx * time_step;
             a->py += vy * time_step;
-            a->py += vz * time_step;            
+            a->pz += vz * time_step;            
             
 
             /* ---
