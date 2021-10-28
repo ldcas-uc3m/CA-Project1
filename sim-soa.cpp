@@ -1,28 +1,11 @@
 using namespace std;
-#include <chrono>
 #include <iostream>
-
-#include <vector>
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <random>
 #include <cassert>
 #include <fstream>
-#include <array>
 
-
-class Force{
-    public:
-        Force(double fx, double fy, double fz){
-            x = fx;
-            y = fy;
-            z = fz;
-        }
-        double x;
-        double y;
-        double z;
-};
 
 
 class Universe{
@@ -37,9 +20,9 @@ class Universe{
             vy = (double *)malloc(sizeof(double) * num_objects);
             vz = (double *)malloc(sizeof(double) * num_objects);
             m = (double *)malloc(sizeof(double) * num_objects);
-            ax = (double *)malloc(sizeof(double) * num_objects);
-            ay = (double *)malloc(sizeof(double) * num_objects);
-            az = (double *)malloc(sizeof(double) * num_objects);
+            fx = (double *)malloc(sizeof(double) * num_objects);
+            fy = (double *)malloc(sizeof(double) * num_objects);
+            fz = (double *)malloc(sizeof(double) * num_objects);
         }
         int objects;
         int size;
@@ -50,9 +33,9 @@ class Universe{
         double * vy;
         double * vz;
         double * m;
-        double * ax;
-        double * ay;
-        double * az;
+        double * fx;
+        double * fy;
+        double * fz;
 };
 
 
@@ -162,7 +145,7 @@ int main(int argc, const char ** argcv){
     std::random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{10e21, 10e15};
+    normal_distribution<> d{1e21, 1e15};
 
     gen64.seed(random_seed);  // introduce seed
 
@@ -183,9 +166,9 @@ int main(int argc, const char ** argcv){
         universe.vy[i] = 0;
         universe.vz[i] = 0;
         universe.m[i] = d(gen64);
-        universe.ax[i] = 0;
-        universe.ay[i] = 0;
-        universe.az[i] = 0;
+        universe.fx[i] = 0;
+        universe.fy[i] = 0;
+        universe.fz[i] = 0;
 
         // write to file
         MyFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i]
@@ -216,8 +199,6 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                Force fa(0, 0, 0);
-                
                 // distance
                 double dx = universe.px[j] - universe.px[i];
                 double dy = universe.py[j] - universe.py[i];
@@ -243,40 +224,44 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(distance*distance*distance);
-                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(distance*distance*distance);
-                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
+               double dfx = (g * universe.m[i] * universe.m[j] * dx) / (distance*distance*distance);
+                    double dfy = (g * universe.m[i] * universe.m[j] * dy) / (distance*distance*distance);
+                    double dfz = (g * universe.m[i] * universe.m[j] * dz) / (distance*distance*distance);
 
-                Force fb(- fa.x, -fa.y, -fa.z);
-              //  forcesf <<fb.x<<" "<<fb.y<<" "<<fb.x<<endl;
-                // b acceleration
-                universe.ax[j] -= fb.x/universe.m[j];
-                universe.ay[j] -= fb.y/universe.m[j];
-                universe.az[j] -= fb.z/universe.m[j];
+                    // a forces
+                    universe.fx[i] += dfx;
+                    universe.fy[i] += dfy;
+                    universe.fz[i] += dfz;
+
+                    // b forces
+                    universe.fx[j] -= dfx;
+                    universe.fy[j] -= dfy;
+                    universe.fz[j] -= dfz;
                 }
-               
-                // a acceleration
-                universe.ax[i] += fa.x/universe.m[i];
-                universe.ay[i] += fa.y/universe.m[i];
-                universe.az[i] += fa.z/universe.m[i];
-            
             }
+
             /* ---
             UPDATE POSITION
             --- */
-            // velocity calculation
-            double vx = universe.vx[i] + (universe.ax[i] * time_step);
-            double vy = universe.vy[i] + (universe.ay[i] * time_step);
-            double vz = universe.vz[i] + (universe.az[i] * time_step);
+            // acceleration calculation
+            double ax = universe.fx[i]/universe.m[i];
+            double ay = universe.fy[i]/universe.m[i];
+            double az = universe.fz[i]/universe.m[i];
 
-            universe.vx[i] = vx;
-            universe.vy[i] = vy;
-            universe.vz[i] = vz;
-     
+            //reset force 
+            universe.fx[i] = 0;
+            universe.fy[i] = 0;
+            universe.fz[i] = 0;
+
+            // velocity calculation
+            universe.vx[i] += ax * time_step;
+            universe.vy[i] += ay * time_step;
+            universe.vz[i] += az * time_step;
+
             // position calculation
-            universe.px[i] += vx * time_step;
-            universe.py[i] += vy * time_step;
-            universe.pz[i] += vz * time_step;
+            universe.px[i] += universe.vx[i] * time_step;
+            universe.py[i] += universe.vy[i] * time_step;
+            universe.pz[i] += universe.vz[i] * time_step;  
 
             /* ---
             REBOUND EFFECT
@@ -306,7 +291,7 @@ int main(int argc, const char ** argcv){
                 universe.vz[i] = - universe.vz[i];
             }
           
-            acelerationsf <<universe.ax[i]<< " " <<universe.ay[i]<< " " <<universe.az[i] <<endl;
+           // acelerationsf <<universe.ax[i]<< " " <<universe.ay[i]<< " " <<universe.az[i] <<endl;
            // positionsf <<universe.px[i]<< " "<<universe.py[i]<<" "<<" "<<universe.pz[i]<<endl;
             
 
