@@ -1,25 +1,11 @@
 using namespace std;
 
 #include <iostream>
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <random>
 #include <cassert>
 #include <fstream>
-
-
-class Force{
-    public:
-        Force(double fx, double fy, double fz){
-            x = fx;
-            y = fy;
-            z = fz;
-        }
-        double x;
-        double y;
-        double z;
-};
 
 
 class Universe{
@@ -38,8 +24,6 @@ class Universe{
             ay = (double *)malloc(sizeof(double) * num_objects);
             az = (double *)malloc(sizeof(double) * num_objects);
         }
-        int objects;
-        int size;
         double * px;
         double * py;
         double * pz;
@@ -50,23 +34,14 @@ class Universe{
         double * ax;
         double * ay;
         double * az;
+        int objects;
+        int size;
 
-        ~Universe(){
-            free(px);
-            free(py);
-            free(pz);
-            free(vx);
-            free(vy);
-            free(vy);
-            free(ax);
-            free(ay);
-            free(az);
-        }
 };
 
 
 // constants
-const double g = 6.674 * 0.00000000001;
+const double g = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
 
 // Global variables
@@ -142,7 +117,7 @@ int main(int argc, const char ** argcv){
               << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
               << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
               << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if(num_iterations <= 0){
         cerr << "Invalid number of iterations "<<endl << "sim-aos invoked with " << argc << " parameters."
@@ -158,7 +133,7 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
     if (size_enclosure<= 0){
         cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
@@ -166,7 +141,7 @@ int main(int argc, const char ** argcv){
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
              << random_seed << endl << " size_enclosure: " <<size_enclosure << endl
              << " time_step: "<< time_step << endl ;
-        return-2;
+        return -2;
     }
 
 
@@ -174,7 +149,7 @@ int main(int argc, const char ** argcv){
     random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<double> d{pow(10, 21),pow(10, 15)};
+    normal_distribution<> d{10e21, 10e15};
 
     gen64.seed(random_seed);  // introduce seed
 
@@ -220,7 +195,6 @@ int main(int argc, const char ** argcv){
     --- */
     
     for(int iteration = 0; iteration < num_iterations; iteration++){
-        if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
 
@@ -230,24 +204,26 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                Force fa(0, 0, 0);
+                double fax = 0;
+                double fay = 0;
+                double faz = 0;
                 
                 // distance
                 double dx = universe.px[j] - universe.px[i];
                 double dy = universe.py[j] - universe.py[i];
                 double dz = universe.pz[j] - universe.pz[i];
-                double distance = sqrt(dx*dx + dy*dy + dz*dz);
+                double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
 
-                if(distance < COL_DISTANCE){
+                if(distance <= COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
 
                     // merge objects into a (i)
-                    universe.m[i] = universe.m[i] + universe.m[j];
                     universe.vx[i] = universe.vx[i] + universe.vx[j];
                     universe.vy[i] = universe.vy[i] + universe.vy[j];
                     universe.vz[i] = universe.vz[i] + universe.vz[j];
+                    universe.m[i] = universe.m[i] + universe.m[j];
 
                     // delete b (j)
                     curr_objects--;
@@ -256,22 +232,24 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                fa.x = (g * universe.m[i] * universe.m[j] * dx) / abs(dx*dx*dx);
-                fa.y = (g * universe.m[i] * universe.m[j] * dy) / abs(dy*dy*dy);
-                fa.z = (g * universe.m[i] * universe.m[j] * dz) / abs(dz*dz*dz);
+                    fax = (g * universe.m[i] * universe.m[j] * dx) / abs(distance*distance*distance);
+                    fay = (g * universe.m[i] * universe.m[j] * dy) / abs(distance*distance*distance);
+                    faz = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
 
-                Force fb(- fa.x, -fa.y, -fa.z);
+                    double fbx = -fax;
+                    double fby = -fay;
+                    double fbz = -faz;
 
-                // b acceleration
-                universe.ax[j] -= fb.x/universe.m[j];
-                universe.ay[j] -= fb.y/universe.m[j];
-                universe.az[j] -= fb.z/universe.m[j];
+                    // b acceleration
+                    universe.ax[j] -= fbx/universe.m[j];
+                    universe.ay[j] -= fby/universe.m[j];
+                    universe.az[j] -= fbz/universe.m[j];
                 }
 
                 // a acceleration
-                universe.ax[i] += fa.x/universe.m[i];
-                universe.ay[i] += fa.y/universe.m[i];
-                universe.az[i] += fa.z/universe.m[i];
+                universe.ax[i] += fax/universe.m[i];
+                universe.ay[i] += fay/universe.m[i];
+                universe.az[i] += faz/universe.m[i];
 
             }
             
@@ -322,8 +300,7 @@ int main(int argc, const char ** argcv){
 
             // print to output
 
-            if((iteration == num_iterations - 1) || (deleted[i + 1] && curr_objects == 1) 
-                || (curr_objects == 0)){  // final positions
+            if((iteration == num_iterations - 1) ||  curr_objects == 1) {  // final positions
 
             outFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
             << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
@@ -336,6 +313,5 @@ int main(int argc, const char ** argcv){
     }
 
     outFile.close();
-    delete(&universe);
     return 0;
 }
