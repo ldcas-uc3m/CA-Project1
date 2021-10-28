@@ -14,13 +14,14 @@ class Universe{
             px = (double *)malloc(sizeof(double) * num_objects);
             py = (double *)malloc(sizeof(double) * num_objects);
             pz = (double *)malloc(sizeof(double) * num_objects);
-            vx = (double *)malloc(sizeof(double) * num_objects);
-            vy = (double *)malloc(sizeof(double) * num_objects);
-            vz = (double *)malloc(sizeof(double) * num_objects);
+            vx = (double *)calloc(num_objects, sizeof(double));
+            vy = (double *)calloc(num_objects, sizeof(double));
+            vz = (double *)calloc(num_objects, sizeof(double));
             m = (double *)malloc(sizeof(double) * num_objects);
-            ax = (double *)malloc(sizeof(double) * num_objects);
-            ay = (double *)malloc(sizeof(double) * num_objects);
-            az = (double *)malloc(sizeof(double) * num_objects);
+            ax = (double *)calloc(num_objects, sizeof(double));
+            ay = (double *)calloc(num_objects, sizeof(double));
+            az = (double *)calloc(num_objects, sizeof(double));
+            // TODO: check calloc
             objects = num_objects;
             size = size_enclosure;
         }
@@ -163,13 +164,7 @@ int main(int argc, const char ** argcv){
         universe.px[i] = dis(gen64);
         universe.py[i] = dis(gen64);
         universe.pz[i] = dis(gen64);
-        universe.vx[i] = 0;
-        universe.vy[i] = 0;
-        universe.vz[i] = 0;
         universe.m[i] = d(gen64);
-        universe.ax[i] = 0;
-        universe.ay[i] = 0;
-        universe.az[i] = 0;
 
         inFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i]
         << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
@@ -236,14 +231,10 @@ int main(int argc, const char ** argcv){
                     fay = (g * universe.m[i] * universe.m[j] * dy) / abs(distance*distance*distance);
                     faz = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
 
-                    double fbx = -fax;
-                    double fby = -fay;
-                    double fbz = -faz;
-
                     // b acceleration
-                    universe.ax[j] -= fbx/universe.m[j];
-                    universe.ay[j] -= fby/universe.m[j];
-                    universe.az[j] -= fbz/universe.m[j];
+                    universe.ax[j] -= -fax/universe.m[j];
+                    universe.ay[j] -= -fay/universe.m[j];
+                    universe.az[j] -= -faz/universe.m[j];
                 }
 
                 // a acceleration
