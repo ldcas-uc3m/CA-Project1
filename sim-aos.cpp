@@ -9,41 +9,31 @@ using namespace std;
 #include <fstream>
 
 
-class Force{
-    public:
-        Force(double fx, double fy, double fz){
-            x = fx;
-            y = fy;
-            z = fz;
-        }
-        double x;
-        double y;
-        double z;
-};
-
 class Object{
     public:
         Object(double x, double y, double z, double mass){
             px = x;
             py = y;
             pz = z;
+            vx = 0;
+            vy = 0;
+            vz = 0;
             m = mass;
-            ax = 0;
-            ay = 0;
-            az = 0;
+            fx = 0;
+            fy = 0;
+            fz = 0;
         }
-        double px = 0;
-        double py = 0;
-        double pz = 0;
-        double vx = 0;
-        double vy = 0;
-        double vz = 0;
-        double ax = 0;
-        double ay = 0;
-        double az = 0;
+        double px;
+        double py;
+        double pz;
+        double vx;
+        double vy;
+        double vz;
         double m;
+        double fx;
+        double fy;
+        double fz;    
 };
-
 // constants
 const double g = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
@@ -153,7 +143,7 @@ int main(int argc, const char ** argcv){
     std::random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{10e21, 10e15};
+    normal_distribution<> d{1e21, 1e15};
     
     gen64.seed(random_seed);  // introduce seed
 
@@ -167,7 +157,12 @@ int main(int argc, const char ** argcv){
     
     // populate
     for (int i = 0; i < num_objects; i++){
-        universe[i] = Object(dis(gen64), dis(gen64), dis(gen64), d(gen64));
+        double a = dis(gen64);
+        double p = dis(gen64);
+        double c = dis(gen64);
+        double u = d(gen64);
+
+        universe[i] = Object(a, p, c, u);
         // write to file
         MyFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
@@ -183,9 +178,10 @@ int main(int argc, const char ** argcv){
     /* ---
     KERNEL
     --- */
- 
+    //ofstream positionsf("positions.txt");
+    ofstream acelerationsf("acelerations.txt");
+    ofstream forcef("force.txt");
     for(int iteration = 0; iteration < num_iterations; iteration++){
-        if(curr_objects == 0) break;
           
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
@@ -199,8 +195,7 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                Force fa(0, 0, 0);
-
+                
                 // distance
                 double dx = b->px - a->px;
                 double dy = b->py - a->py;
@@ -226,41 +221,47 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                    fa.x = (g * a->m * b->m * dx) / abs(distance*distance*distance);
-                    fa.y = (g * a->m * b->m * dy) / abs(distance*distance*distance);
-                    fa.z = (g * a->m * b->m * dz) / abs(distance*distance*distance);
+                    double dfx = (g * a->m * b->m * dx) / (distance*distance*distance);
+                    double dfy = (g * a->m * b->m * dy) / (distance*distance*distance);
+                    double dfz = (g * a->m * b->m * dz) / (distance*distance*distance);
 
-                    Force fb(- fa.x, -fa.y, -fa.z);
+                    // a forces
+                    a->fx += dfx;
+                    a->fy += dfy;
+                    a->fz += dfz;
 
-                    // b acceleration
-                    b->ax -= fb.x/b->m;
-                    b->ay -= fb.y/b->m;
-                    b->az -= fb.z/b->m;
+                    // b forces
+                    b->fx -= dfx;
+                    b->fy -= dfy;
+                    b->fz -= dfz;
                 }
-
-                // a acceleration
-                a->ax += fa.x/a->m;
-                a->ay += fa.y/a->m;
-                a->az += fa.z/a->m;
+  
+        
             }
 
             /* ---
             UPDATE POSITION
             --- */
-            // velocity calculation
-            double vx = a->vx + a->ax * time_step;
-            double vy = a->vy + a->ay * time_step;
-            double vz = a->vz + a->az * time_step;
+             // acceleration calculation
+            double ax = a->fx/a->m;
+            double ay = a->fy/a->m;
+            double az = a->fz/a->m;
+            acelerationsf<< ax << " " <<ay<<" "<<" "<<az<<endl;
+           
+            //reset force 
+            a->fx = 0;
+            a->fy = 0;
+            a->fz = 0;
 
-            a->vx = vx;
-            a->vy = vy;
-            a->vz = vz;
+            // velocity calculation
+            a->vx += ax * time_step;
+            a->vy += ay * time_step;
+            a->vz += az * time_step;
             
             // position calculation
-            a->px += vx * time_step;
-            a->py += vy * time_step;
-            a->pz += vz * time_step;            
-            
+            a->px += a->vx * time_step;
+            a->py += a->vy * time_step;
+            a->pz += a->vz * time_step;  
 
             /* ---
             REBOUND EFFECT
@@ -289,9 +290,13 @@ int main(int argc, const char ** argcv){
                 a->pz = size_enclosure;
                 a->vz = - a->vz;
             }
+                
         }
+        acelerationsf << endl; 
+        forcef << endl;
     }
-
+    acelerationsf.close();
+    forcef.close();
     /*
     OUTPUT
     */
