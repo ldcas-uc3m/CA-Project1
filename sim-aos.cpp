@@ -244,20 +244,16 @@ int main(int argc, const char ** argcv){
             /* ---
             UPDATE POSITION
             --- */
-             // acceleration calculation
-            double ax = a->fx/a->m;
-            double ay = a->fy/a->m;
-            double az = a->fz/a->m;
-           
+
+            // velocity calculation
+            a->vx += (a->fx/a->m) * time_step;
+            a->vy += (a->fy/a->m) * time_step;
+            a->vz += (a->fz/a->m) * time_step;
+            
             //reset force 
             a->fx = 0;
             a->fy = 0;
             a->fz = 0;
-
-            // velocity calculation
-            a->vx += ax * time_step;
-            a->vy += ay * time_step;
-            a->vz += az * time_step;
             
             // position calculation
             a->px += a->vx * time_step;
