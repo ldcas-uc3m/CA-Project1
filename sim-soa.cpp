@@ -1,4 +1,5 @@
 using namespace std;
+
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
@@ -186,9 +187,7 @@ int main(int argc, const char ** argcv){
     /* ---
     KERNEL
     --- */
-    ofstream acelerationsf("acelerations.txt");
-   // ofstream forcesf("forces.txt");
-    ofstream positionsf("positions.txt");
+
     for(int iteration = 0; iteration < num_iterations; iteration++){
         if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
@@ -205,7 +204,6 @@ int main(int argc, const char ** argcv){
                 double dz = universe.pz[j] - universe.pz[i];
                 double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
                 
-
                 if(distance <= COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
@@ -224,7 +222,7 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-               double dfx = (g * universe.m[i] * universe.m[j] * dx) / (distance*distance*distance);
+               		double dfx = (g * universe.m[i] * universe.m[j] * dx) / (distance*distance*distance);
                     double dfy = (g * universe.m[i] * universe.m[j] * dy) / (distance*distance*distance);
                     double dfz = (g * universe.m[i] * universe.m[j] * dz) / (distance*distance*distance);
 
@@ -290,17 +288,9 @@ int main(int argc, const char ** argcv){
                 universe.pz[i] = size_enclosure;
                 universe.vz[i] = - universe.vz[i];
             }
-          
-           // acelerationsf <<universe.ax[i]<< " " <<universe.ay[i]<< " " <<universe.az[i] <<endl;
-           // positionsf <<universe.px[i]<< " "<<universe.py[i]<<" "<<" "<<universe.pz[i]<<endl;
-            
-
-            //cout << "iteration " << iteration << ", object " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << " | " << universe.m[i] << endl;
         }
     }
-    //acelerationsf.close();
-    //forcesf.close();
-    positionsf.close();
+
     /*
     OUTPUT
     */
@@ -319,6 +309,4 @@ int main(int argc, const char ** argcv){
     }
 
     OutFile.close();
-
-    //delete(&universe);
 }
