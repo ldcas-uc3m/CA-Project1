@@ -192,12 +192,6 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                
-                // distance
-                double dx = b->px - a->px;
-                double dy = b->py - a->py;
-                double dz = b->pz - a->pz;
-                double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
 
                 if(distance <= COL_DISTANCE){
                     /* ---
@@ -217,14 +211,14 @@ int main(int argc, const char ** argcv){
                 } else{
 
                     // a forces
-                    a->fx += (g * a->m * b->m * dx) / (distance*distance*distance);
-                    a->fy += (g * a->m * b->m * dy) / (distance*distance*distance);
-                    a->fz += (g * a->m * b->m * dz) / (distance*distance*distance);
+                    a->fx += (g * a->m * b->m * (b->px - a->px)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
+                    a->fy += (g * a->m * b->m * (b->py - a->py)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
+                    a->fz += (g * a->m * b->m * (b->pz - a->pz)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
 
                     // b forces
-                    b->fx -= (g * a->m * b->m * dx) / (distance*distance*distance);
-                    b->fy -= (g * a->m * b->m * dy) / (distance*distance*distance);
-                    b->fz -= (g * a->m * b->m * dz) / (distance*distance*distance);
+                    b->fx -= (g * a->m * b->m * (b->px - a->px)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
+                    b->fy -= (g * a->m * b->m * (b->py - a->py)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
+                    b->fz -= (g * a->m * b->m * (b->pz - a->pz)) / ((std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz)))*(std::sqrt((b->px - a->px)*(b->px - a->px) + (b->py - a->py)*(b->py - a->py) + (b->pz - a->pz)*(b->pz - a->pz))));
                 }
             }
 
