@@ -23,16 +23,16 @@ class Object{
             fy = 0;
             fz = 0;
         }
+		double m;
         double px;
-        double py;
-        double pz;
         double vx;
-        double vy;
-        double vz;
-        double m;
         double fx;
+        double py;
+        double vy;
         double fy;
-        double fz;    
+        double pz;
+        double vz;
+        double fz;
 };
 // constants
 const double g = 6.674e-11;
@@ -157,12 +157,12 @@ int main(int argc, const char ** argcv){
     
     // populate
     for (int i = 0; i < num_objects; i++){
-        double a = dis(gen64);
-        double p = dis(gen64);
-        double c = dis(gen64);
-        double u = d(gen64);
+        double x = dis(gen64);
+        double y = dis(gen64);
+        double z = dis(gen64);
+        double m = d(gen64);
 
-        universe[i] = Object(a, p, c, u);
+        universe[i] = Object(x, y, z, m);
         // write to file
         MyFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
         << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
@@ -171,18 +171,13 @@ int main(int argc, const char ** argcv){
     
     MyFile.close();
 
-    int curr_objects = num_objects;
-
     bool *deleted = (bool *)calloc(num_objects, sizeof(bool)); // bytemap of objects -> if true, object is deleted
 
     /* ---
     KERNEL
     --- */
-    //ofstream positionsf("positions.txt");
-    ofstream acelerationsf("acelerations.txt");
-    ofstream forcef("force.txt");
+
     for(int iteration = 0; iteration < num_iterations; iteration++){
-          
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
             Object *a = &universe[i];
@@ -214,49 +209,36 @@ int main(int argc, const char ** argcv){
                     a->vz = a->vz + b->vz;
 
                     // del b
-                    //delete &(universe[j]);
-                    curr_objects--;
                     deleted[j] = true;
 
                     // force between a & b is 0
                 } else{
-                
-                    double dfx = (g * a->m * b->m * dx) / (distance*distance*distance);
-                    double dfy = (g * a->m * b->m * dy) / (distance*distance*distance);
-                    double dfz = (g * a->m * b->m * dz) / (distance*distance*distance);
 
                     // a forces
-                    a->fx += dfx;
-                    a->fy += dfy;
-                    a->fz += dfz;
+                    a->fx += (g * a->m * b->m * dx) / (distance*distance*distance);
+                    a->fy += (g * a->m * b->m * dy) / (distance*distance*distance);
+                    a->fz += (g * a->m * b->m * dz) / (distance*distance*distance);
 
                     // b forces
-                    b->fx -= dfx;
-                    b->fy -= dfy;
-                    b->fz -= dfz;
+                    b->fx -= (g * a->m * b->m * dx) / (distance*distance*distance);
+                    b->fy -= (g * a->m * b->m * dy) / (distance*distance*distance);
+                    b->fz -= (g * a->m * b->m * dz) / (distance*distance*distance);
                 }
-  
-        
             }
 
             /* ---
             UPDATE POSITION
             --- */
-             // acceleration calculation
-            double ax = a->fx/a->m;
-            double ay = a->fy/a->m;
-            double az = a->fz/a->m;
-            acelerationsf<< ax << " " <<ay<<" "<<" "<<az<<endl;
-           
-            //reset force 
+
+            // velocity calculation
+            a->vx += (a->fx/a->m) * time_step;
+            a->vy += (a->fy/a->m) * time_step;
+            a->vz += (a->fz/a->m) * time_step;
+			
+			// reset force 
             a->fx = 0;
             a->fy = 0;
             a->fz = 0;
-
-            // velocity calculation
-            a->vx += ax * time_step;
-            a->vy += ay * time_step;
-            a->vz += az * time_step;
             
             // position calculation
             a->px += a->vx * time_step;
@@ -289,14 +271,9 @@ int main(int argc, const char ** argcv){
             } else if(a->pz >= size_enclosure){
                 a->pz = size_enclosure;
                 a->vz = - a->vz;
-            }
-                
+            }     
         }
-        acelerationsf << endl; 
-        forcef << endl;
     }
-    acelerationsf.close();
-    forcef.close();
     /*
     OUTPUT
     */
