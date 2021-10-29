@@ -252,7 +252,8 @@ int main(int argc, const char ** argcv){
             if(a->px <= 0){
                 a->px = 0;
                 a->vx = - a->vx;
-            } else if(a->px >= size_enclosure){
+            }
+	    	if(a->px >= size_enclosure){
                 a->px = size_enclosure;
                 a->vx = - a->vx;
             }
@@ -260,7 +261,8 @@ int main(int argc, const char ** argcv){
             if(a->py <= 0){
                 a->py = 0;
                 a->vy = - a->vy;
-            } else if(a->py >= size_enclosure){
+            }
+			if(a->py >= size_enclosure){
                 a->py = size_enclosure;
                 a->vy = - a->vy;
             }
@@ -268,7 +270,8 @@ int main(int argc, const char ** argcv){
             if(a->pz <= 0){
                 a->pz = 0;
                 a->vz = - a->vz;
-            } else if(a->pz >= size_enclosure){
+            }
+			if(a->pz >= size_enclosure){
                 a->pz = size_enclosure;
                 a->vz = - a->vz;
             }     
