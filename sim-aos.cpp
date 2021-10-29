@@ -6,6 +6,7 @@ using namespace std;
 #include <random>
 #include <cassert>
 #include <fstream>
+#include <iomanip>
 
 
 class Object{
@@ -149,7 +150,7 @@ int main(int argc, const char ** argcv){
     // init file
     ofstream inFile("init_config.txt", ofstream::out);  // open file
     
-    inFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
+    inFile << fixed << setprecision(3) << argcv[4] << " " << argcv[5] << " " << argcv[1];
     inFile << endl;
     
     // populate
@@ -176,7 +177,7 @@ int main(int argc, const char ** argcv){
     
     ofstream outFile("final_config.txt");
 
-    outFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
+    outFile << fixed << setprecision(3) << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
 
 
     // extra vars
@@ -292,7 +293,7 @@ int main(int argc, const char ** argcv){
             
             if((iteration == num_iterations - 1) || curr_objects == 1){  // final positions
 
-            outFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+            outFile << fixed << setprecision(3) << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
             << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
             << " " << universe[i].m << endl;
             }
