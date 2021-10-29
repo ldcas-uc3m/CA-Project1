@@ -7,6 +7,8 @@ using namespace std;
 #include <random>
 #include <cassert>
 #include <fstream>
+#include <iomanip>
+
 
 
 class Object{
@@ -152,7 +154,7 @@ int main(int argc, const char ** argcv){
     
     ofstream MyFile("init_config.txt", ofstream::out);  // open file
     
-    MyFile << argcv[4] << " " << argcv[5] << " " << argcv[1];
+    MyFile << fixed <<setprecision(3)<< argcv[4] << " " << argcv[5] << " " << argcv[1];
     MyFile << endl;
     
     // populate
@@ -282,7 +284,7 @@ int main(int argc, const char ** argcv){
     */
     ofstream OutFile("final_config.txt");
 
-    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
+    OutFile << fixed << setprecision(3)<< argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
 
     for (int i = 0; i < num_objects; i++){
         if(deleted[i]) continue;
