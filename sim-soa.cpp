@@ -18,10 +18,9 @@ class Universe{
             vy = (double *)calloc(num_objects, sizeof(double));
             vz = (double *)calloc(num_objects, sizeof(double));
             m = (double *)malloc(sizeof(double) * num_objects);
-            ax = (double *)calloc(num_objects, sizeof(double));
-            ay = (double *)calloc(num_objects, sizeof(double));
-            az = (double *)calloc(num_objects, sizeof(double));
-            // TODO: check calloc
+            fx = (double *)calloc(num_objects, sizeof(double));
+            fy = (double *)calloc(num_objects, sizeof(double));
+            fz = (double *)calloc(num_objects, sizeof(double));
             objects = num_objects;
             size = size_enclosure;
         }
@@ -32,25 +31,17 @@ class Universe{
         double * vy;
         double * vz;
         double * m;
-        double * ax;
-        double * ay;
-        double * az;
+        double * fx;
+        double * fy;
+        double * fz;
         int objects;
         int size;
-
 };
 
 
 // constants
-const double g = 6.674e-11;
+const double G = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
-
-// Global variables
-int num_objects;
-int num_iterations;
-int random_seed;
-int size_enclosure;
-int time_step;
 
 
 int main(int argc, const char ** argcv){
@@ -95,7 +86,7 @@ int main(int argc, const char ** argcv){
                 break;
         }
         return -1;
-    }else if(argc > 6){
+    } else if(argc > 6){
         cerr << "sim-soa invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << argcv[1]
              << endl << " num_iterations: " << argcv[2] << endl << " random_seed: "
@@ -105,11 +96,11 @@ int main(int argc, const char ** argcv){
     }
 
     // parameters init & casting
-    num_objects = atoi(argcv[1]);
-    num_iterations = atoi(argcv[2]);
-    random_seed = atoi(argcv[3]);
-    size_enclosure = atoi(argcv[4]);
-    time_step = atoi(argcv[5]);
+    const int num_objects = atoi(argcv[1]);
+    const int num_iterations = atoi(argcv[2]);
+    const int random_seed = atoi(argcv[3]);
+    const double size_enclosure = atoi(argcv[4]);
+    const double time_step = atoi(argcv[5]);
 
     // chech correct parameters
     if(num_objects <= 0) {
@@ -128,7 +119,7 @@ int main(int argc, const char ** argcv){
              << " time_step: "<< time_step << endl ;
         return -2;
     }
-    if( random_seed<= 0){
+    if(random_seed<= 0){
         cerr << "Invalid seed "<<endl << "sim-aos invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
@@ -136,7 +127,7 @@ int main(int argc, const char ** argcv){
              << " time_step: "<< time_step << endl ;
         return -2;
     }
-    if (size_enclosure<= 0){
+    if(size_enclosure<= 0){
         cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
@@ -150,16 +141,18 @@ int main(int argc, const char ** argcv){
     random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{10e21, 10e15};
+    normal_distribution<> d{1e21, 1e15};
 
     gen64.seed(random_seed);  // introduce seed
 
     // big bang
     Universe universe(num_objects, size_enclosure);
     
+    // open input
     ofstream inFile("init_config.txt", ofstream::out);  // open file
     inFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
     
+    // populate
     for(int i = 0; i < num_objects; i++){
         universe.px[i] = dis(gen64);
         universe.py[i] = dis(gen64);
@@ -173,11 +166,8 @@ int main(int argc, const char ** argcv){
 
     inFile.close();
     
-    /* ---
-    OUTPUT
-    --- */
+    // open output
     ofstream outFile("final_config.txt");
-
     outFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
 
     // extra vars
@@ -227,39 +217,44 @@ int main(int argc, const char ** argcv){
                     // force between a & b is 0
                 } else{
                 
-                    fax = (g * universe.m[i] * universe.m[j] * dx) / abs(distance*distance*distance);
-                    fay = (g * universe.m[i] * universe.m[j] * dy) / abs(distance*distance*distance);
-                    faz = (g * universe.m[i] * universe.m[j] * dz) / abs(distance*distance*distance);
+                    double dfx = (G * universe.m[i] * universe.m[j] * dx) / (distance*distance*distance);
+                    double dfy = (G * universe.m[i] * universe.m[j] * dy) / (distance*distance*distance);
+                    double dfz = (G * universe.m[i] * universe.m[j] * dz) / (distance*distance*distance);
 
-                    // b acceleration
-                    universe.ax[j] -= -fax/universe.m[j];
-                    universe.ay[j] -= -fay/universe.m[j];
-                    universe.az[j] -= -faz/universe.m[j];
+                    // a forces
+                    universe.fx[i] += dfx;
+                    universe.fy[i] += dfy;
+                    universe.fz[i] += dfz;
+
+                    // b forces
+                    universe.fx[j] -= dfx;
+                    universe.fy[j] -= dfy;
+                    universe.fz[j] -= dfz;
                 }
-
-                // a acceleration
-                universe.ax[i] += fax/universe.m[i];
-                universe.ay[i] += fay/universe.m[i];
-                universe.az[i] += faz/universe.m[i];
-
             }
             
             /* ---
             UPDATE POSITION
             --- */
-            // velocity calculation
-            double vx = universe.vx[i] + universe.ax[i] * time_step;
-            double vy = universe.vy[i] + universe.ay[i] * time_step;
-            double vz = universe.vz[i] + universe.az[i] * time_step;
+            // acceleration calculation
+            double ax = universe.fx[i]/universe.m[i];
+            double ay = universe.fy[i]/universe.m[i];
+            double az = universe.fz[i]/universe.m[i];
 
-            universe.vx[i] = vx;
-            universe.vy[i] = vy;
-            universe.vz[i] = vz;
+            //reset force 
+            universe.fx[i] = 0;
+            universe.fy[i] = 0;
+            universe.fz[i] = 0;
+
+            // velocity calculation
+            universe.vx[i] += ax * time_step;
+            universe.vy[i] += ay * time_step;
+            universe.vz[i] += az * time_step;
 
             // position calculation
-            universe.px[i] += vx * time_step;
-            universe.py[i] += vy * time_step;
-            universe.py[i] += vz * time_step;
+            universe.px[i] += universe.vx[i] * time_step;
+            universe.py[i] += universe.vy[i] * time_step;
+            universe.pz[i] += universe.vz[i] * time_step;
 
             /* ---
             REBOUND EFFECT
@@ -289,20 +284,20 @@ int main(int argc, const char ** argcv){
                 universe.vz[i] = - universe.vz[i];
             }
 
-            // print to output
-
+            /* ---
+            OUTPUT
+            --- */
+    
             if((iteration == num_iterations - 1) ||  curr_objects == 1) {  // final positions
 
             outFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
             << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
             << " " << universe.m[i] << endl;
             }
-
-
-            //cout << "iteration: " << iteration << ", element: " << i << " | " << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] << " | " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] << endl;
         }
     }
 
     outFile.close();
+
     return 0;
 }
