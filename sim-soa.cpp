@@ -12,8 +12,6 @@ using namespace std;
 class Universe{
     public:
         Universe(int num_objects, int size_enclosure){
-            objects = num_objects;
-            size = size_enclosure;
             px = (double *)malloc(sizeof(double) * num_objects);
             py = (double *)malloc(sizeof(double) * num_objects);
             pz = (double *)malloc(sizeof(double) * num_objects);
@@ -24,9 +22,9 @@ class Universe{
             fx = (double *)malloc(sizeof(double) * num_objects);
             fy = (double *)malloc(sizeof(double) * num_objects);
             fz = (double *)malloc(sizeof(double) * num_objects);
+            objects = num_objects;
+            size = size_enclosure;
         }
-        int objects;
-        int size;
         double * px;
         double * py;
         double * pz;
@@ -37,6 +35,8 @@ class Universe{
         double * fx;
         double * fy;
         double * fz;
+        int objects;
+        int size;
 };
 
 
@@ -179,8 +179,6 @@ int main(int argc, const char ** argcv){
     }
     
     MyFile.close();
-    
-    int curr_objects = num_objects;
 
     bool *deleted = (bool *)calloc(num_objects, sizeof(bool));  // bytemap of objects -> if true, object is deleted
 
@@ -189,7 +187,6 @@ int main(int argc, const char ** argcv){
     --- */
 
     for(int iteration = 0; iteration < num_iterations; iteration++){
-        if(curr_objects == 0) break;
         for(int i = 0; i < num_objects; i++){
             if(deleted[i]) continue;
             for(int j = i + 1; j < num_objects; j++){
@@ -198,13 +195,8 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                // distance
-                double dx = universe.px[j] - universe.px[i];
-                double dy = universe.py[j] - universe.py[i];
-                double dz = universe.pz[j] - universe.pz[i];
-                double distance = std::sqrt(dx*dx + dy*dy + dz*dz);
                 
-                if(distance <= COL_DISTANCE){
+                if(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])) <= COL_DISTANCE){
                     /* ---
                     OBJECT COLLISION
                     --- */
@@ -216,45 +208,37 @@ int main(int argc, const char ** argcv){
                     universe.vz[i] = universe.vz[i] + universe.vz[j];
 
                     // delete b (j)
-                    curr_objects--;
                     deleted[j] = true;
 
                     // force between a & b is 0
                 } else{
-                
-               		double dfx = (g * universe.m[i] * universe.m[j] * dx) / (distance*distance*distance);
-                    double dfy = (g * universe.m[i] * universe.m[j] * dy) / (distance*distance*distance);
-                    double dfz = (g * universe.m[i] * universe.m[j] * dz) / (distance*distance*distance);
 
                     // a forces
-                    universe.fx[i] += dfx;
-                    universe.fy[i] += dfy;
-                    universe.fz[i] += dfz;
+                    universe.fx[i] += (g * universe.m[i] * universe.m[j] * (universe.px[j] - universe.px[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
+                    universe.fy[i] += (g * universe.m[i] * universe.m[j] * (universe.py[j] - universe.py[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
+                    universe.fz[i] += (g * universe.m[i] * universe.m[j] * (universe.pz[j] - universe.pz[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
 
                     // b forces
-                    universe.fx[j] -= dfx;
-                    universe.fy[j] -= dfy;
-                    universe.fz[j] -= dfz;
+                    universe.fx[j] -= (g * universe.m[i] * universe.m[j] * (universe.px[j] - universe.px[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
+                    universe.fy[j] -= (g * universe.m[i] * universe.m[j] * (universe.py[j] - universe.py[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
+                    universe.fz[j] -= (g * universe.m[i] * universe.m[j] * (universe.pz[j] - universe.pz[i])) / ((std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i])))*(std::sqrt((universe.px[j] - universe.px[i])*(universe.px[j] - universe.px[i]) + (universe.py[j] - universe.py[i])*(universe.py[j] - universe.py[i]) + (universe.pz[j] - universe.pz[i])*(universe.pz[j] - universe.pz[i]))));
+
                 }
             }
 
             /* ---
             UPDATE POSITION
             --- */
-            // acceleration calculation
-            double ax = universe.fx[i]/universe.m[i];
-            double ay = universe.fy[i]/universe.m[i];
-            double az = universe.fz[i]/universe.m[i];
-
+            
+            // velocity calculation
+            universe.vx[i] += (universe.fx[i]/universe.m[i]) * time_step;
+            universe.vy[i] += (universe.fy[i]/universe.m[i]) * time_step;
+            universe.vz[i] += (universe.fz[i]/universe.m[i]) * time_step;
+            
             //reset force 
             universe.fx[i] = 0;
             universe.fy[i] = 0;
             universe.fz[i] = 0;
-
-            // velocity calculation
-            universe.vx[i] += ax * time_step;
-            universe.vy[i] += ay * time_step;
-            universe.vz[i] += az * time_step;
 
             // position calculation
             universe.px[i] += universe.vx[i] * time_step;
@@ -268,7 +252,8 @@ int main(int argc, const char ** argcv){
             if(universe.px[i] <= 0){
                 universe.px[i] = 0;
                 universe.vx[i] = - universe.vx[i];
-            } else if(universe.px[i] >= size_enclosure){
+            }
+            if(universe.px[i] >= size_enclosure){
                 universe.px[i] = size_enclosure;
                 universe.vx[i] = - universe.vx[i];
             }
@@ -276,7 +261,8 @@ int main(int argc, const char ** argcv){
             if(universe.py[i] <= 0){
                 universe.py[i] = 0;
                 universe.vy[i] = - universe.vy[i];
-            } else if(universe.py[i] >= size_enclosure){
+            }
+            if(universe.py[i] >= size_enclosure){
                 universe.py[i] = size_enclosure;
                 universe.vy[i] = - universe.vy[i];
             }
@@ -284,7 +270,8 @@ int main(int argc, const char ** argcv){
             if(universe.pz[i] <= 0){
                 universe.pz[i] = 0;
                 universe.vz[i] = - universe.vz[i];
-            } else if(universe.pz[i] >= size_enclosure){
+            }
+            if(universe.pz[i] >= size_enclosure){
                 universe.pz[i] = size_enclosure;
                 universe.vz[i] = - universe.vz[i];
             }
