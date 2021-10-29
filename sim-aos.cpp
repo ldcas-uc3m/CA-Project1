@@ -38,13 +38,6 @@ class Object{
 const double g = 6.674e-11;
 const double COL_DISTANCE = 1;  // minimum colision distance
 
-// Global variables
-int num_objects;
-int num_iterations;
-int random_seed;
-double size_enclosure;
-double time_step;
-
 
 int main(int argc, const char ** argcv){
 
@@ -102,11 +95,11 @@ int main(int argc, const char ** argcv){
     }
 
     // parameters init & casting
-    num_objects = atoi(argcv[1]);
-    num_iterations = atoi(argcv[2]);
-    random_seed = atoi(argcv[3]);
-    size_enclosure = atoi(argcv[4]);
-    time_step = atoi(argcv[5]);
+    const int num_objects = atoi(argcv[1]);
+    const int num_iterations = atoi(argcv[2]);
+    const int random_seed = atoi(argcv[3]);
+    const double size_enclosure = atof(argcv[4]);
+    const double time_step = atof(argcv[5]);
 
     // chech correct parameters
     if(num_objects <= 0) {
@@ -125,7 +118,7 @@ int main(int argc, const char ** argcv){
              << " time_step: "<< time_step << endl ;
         return -2;
     }
-    if( random_seed<= 0){
+    if(random_seed<= 0){
         cerr << "Invalid seed "<<endl << "sim-aos invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
@@ -133,7 +126,7 @@ int main(int argc, const char ** argcv){
              << " time_step: "<< time_step << endl ;
         return -2;
     }
-    if (size_enclosure<= 0){
+    if(size_enclosure<= 0){
         cerr << "Invalid box size "<< endl << "sim-aos invoked with " << argc << " parameters."
              << endl << "Arguments: "<< endl << " num_objects: " << num_objects
              << endl << " num_iterations: " << num_iterations << endl << " random_seed: "
@@ -146,7 +139,7 @@ int main(int argc, const char ** argcv){
     random_device rd;
     mt19937_64 gen64;  // generate object
     uniform_real_distribution<> dis(0.0, size_enclosure);
-    normal_distribution<> d{10e21, 10e15};
+    normal_distribution<> d{1e21, 1e15};
     
     gen64.seed(random_seed);  // introduce seed
 
@@ -180,9 +173,10 @@ int main(int argc, const char ** argcv){
     /* ---
     OUTPUT
     --- */
-    ofstream OutFile("final_config.txt");
+    
+    ofstream outFile("final_config.txt");
 
-    OutFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
+    outFile << argcv[4] << " " << argcv[5] << " " << argcv[1] << endl;
 
 
     // extra vars
@@ -206,7 +200,7 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-
+                
                 // distance
                 double dx = b->px - a->px;
                 double dy = b->py - a->py;
@@ -219,10 +213,10 @@ int main(int argc, const char ** argcv){
                     --- */
 
                     // merge objects into a
+                    a->m = a->m + b->m;
                     a->vx = a->vx + b->vx;
                     a->vy = a->vy + b->vy;
                     a->vz = a->vz + b->vz;
-                    a->m = a->m + b->m;
 
                     // del b
                     curr_objects--;
@@ -230,8 +224,7 @@ int main(int argc, const char ** argcv){
 
                     // force between a & b is 0
                 } else{
-                    
-                    
+                
                     double dfx = (g * a->m * b->m * dx) / (distance*distance*distance);
                     double dfy = (g * a->m * b->m * dy) / (distance*distance*distance);
                     double dfz = (g * a->m * b->m * dz) / (distance*distance*distance);
@@ -246,22 +239,21 @@ int main(int argc, const char ** argcv){
                     b->fy -= dfy;
                     b->fz -= dfz;
                 }
-
             }
 
             /* ---
             UPDATE POSITION
             --- */
-            // acceleration calculation
+             // acceleration calculation
             double ax = a->fx/a->m;
             double ay = a->fy/a->m;
             double az = a->fz/a->m;
-
-            // reset force
+           
+            //reset force 
             a->fx = 0;
             a->fy = 0;
             a->fz = 0;
-            
+
             // velocity calculation
             a->vx += ax * time_step;
             a->vy += ay * time_step;
@@ -270,8 +262,7 @@ int main(int argc, const char ** argcv){
             // position calculation
             a->px += a->vx * time_step;
             a->py += a->vy * time_step;
-            a->pz += a->vz * time_step;            
-            
+            a->pz += a->vz * time_step;  
 
             /* ---
             REBOUND EFFECT
@@ -302,14 +293,15 @@ int main(int argc, const char ** argcv){
             }
 
             // print to output
-            if((iteration = num_iterations - 1) || curr_objects == 1){  // final positions
+            
+            if((iteration == num_iterations - 1) || curr_objects == 1){  // final positions
 
-            OutFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
+            outFile << universe[i].px << " " << universe[i].py << " " << universe[i].pz 
             << " " << universe[i].vx << " " << universe[i].vy << " " << universe[i].vz 
             << " " << universe[i].m << endl;
             }
         }
     }
-    OutFile.close();
+    outFile.close();
     return 0;
 }
