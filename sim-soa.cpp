@@ -233,20 +233,15 @@ int main(int argc, const char ** argcv){
             /* ---
             UPDATE POSITION
             --- */
-            // acceleration calculation
-            double ax = universe.fx[i]/universe.m[i];
-            double ay = universe.fy[i]/universe.m[i];
-            double az = universe.fz[i]/universe.m[i];
-
-            // reset force 
+            // velocity calculation
+            universe.vx[i] += (universe.fx[i]/universe.m[i]) * time_step;
+            universe.vy[i] += (universe.fy[i]/universe.m[i]) * time_step;
+            universe.vz[i] += (universe.fz[i]/universe.m[i]) * time_step;
+            
+            //reset force 
             universe.fx[i] = 0;
             universe.fy[i] = 0;
             universe.fz[i] = 0;
-
-            // velocity calculation
-            universe.vx[i] += ax * time_step;
-            universe.vy[i] += ay * time_step;
-            universe.vz[i] += az * time_step;
 
             // position calculation
             universe.px[i] += universe.vx[i] * time_step;
