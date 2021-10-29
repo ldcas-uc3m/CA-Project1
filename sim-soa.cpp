@@ -99,8 +99,8 @@ int main(int argc, const char ** argcv){
     const int num_objects = atoi(argcv[1]);
     const int num_iterations = atoi(argcv[2]);
     const int random_seed = atoi(argcv[3]);
-    const double size_enclosure = atoi(argcv[4]);
-    const double time_step = atoi(argcv[5]);
+    const double size_enclosure = atof(argcv[4]);
+    const double time_step = atof(argcv[5]);
 
     // chech correct parameters
     if(num_objects <= 0) {
@@ -189,9 +189,6 @@ int main(int argc, const char ** argcv){
                 /* ---
                 FORCE COMPUTATION
                 --- */
-                double fax = 0;
-                double fay = 0;
-                double faz = 0;
                 
                 // distance
                 double dx = universe.px[j] - universe.px[i];
@@ -241,7 +238,7 @@ int main(int argc, const char ** argcv){
             double ay = universe.fy[i]/universe.m[i];
             double az = universe.fz[i]/universe.m[i];
 
-            //reset force 
+            // reset force 
             universe.fx[i] = 0;
             universe.fy[i] = 0;
             universe.fz[i] = 0;
@@ -288,11 +285,10 @@ int main(int argc, const char ** argcv){
             OUTPUT
             --- */
     
-            if((iteration == num_iterations - 1) ||  curr_objects == 1) {  // final positions
-
-            outFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
-            << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
-            << " " << universe.m[i] << endl;
+            if((iteration == num_iterations - 1) ||  curr_objects == 1){  // final positions
+                outFile << universe.px[i] << " " << universe.py[i] << " " << universe.pz[i] 
+                << " " << universe.vx[i] << " " << universe.vy[i] << " " << universe.vz[i] 
+                << " " << universe.m[i] << endl;
             }
         }
     }
